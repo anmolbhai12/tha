@@ -19,47 +19,7 @@ import {
 import { gsap } from 'gsap';
 
 // Mock Data
-const INITIAL_PROPERTIES = [
-  {
-    id: 1,
-    title: "Aetheria Penthouse",
-    location: "Downtown Metropolis",
-    price: 1250000,
-    beds: 3,
-    baths: 2,
-    sqft: 2400,
-    type: "Penthouse",
-    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
-    description: "Experience the pinnacle of urban luxury in this stunning penthouse with panoramic city views.",
-    seller: "Elena Vance"
-  },
-  {
-    id: 2,
-    title: "Celestial Villa",
-    location: "Emerald Shores",
-    price: 3400000,
-    beds: 5,
-    baths: 4,
-    sqft: 5200,
-    type: "Villa",
-    image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-1.2.1&auto=format&fit=crop&w=1351&q=80",
-    description: "A breathtaking beachfront villa offering direct private beach access and ultra-modern architecture.",
-    seller: "Marcus Sterling"
-  },
-  {
-    id: 3,
-    title: "Zenith Heights",
-    location: "Skyline District",
-    price: 850000,
-    beds: 2,
-    baths: 2,
-    sqft: 1800,
-    type: "Apartment",
-    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
-    description: "Modern apartment with floor-to-ceiling windows and premium smart home integrations.",
-    seller: "Sarah Chen"
-  }
-];
+const INITIAL_PROPERTIES = [];
 
 function App() {
   const [view, setView] = useState('landing'); // landing, buyer, seller, detail, auth
@@ -207,9 +167,9 @@ function App() {
   const LandingView = () => (
     <div className="hero-section" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', background: 'linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url("https://images.unsplash.com/photo-1600585154340-be6199f7a096?auto=format&fit=crop&w=1920&q=80")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
       <div className="container hero-content">
-        <span className="badge">Welcome to Pure Excellence</span>
+        <span className="badge">Welcome to DalaalStreet</span>
         <h1 style={{ fontSize: '4.5rem', marginBottom: '1.5rem', maxWidth: '800px', lineHeight: 1.1 }}>
-          Discover Your <span style={{ color: 'var(--accent-gold)' }}>Masterpiece</span> Home
+          Discover Your <span className="text-gradient-gold">Masterpiece</span> Home
         </h1>
         <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', maxWidth: '600px', marginBottom: '2.5rem' }}>
           Connecting sophisticated buyers with extraordinary properties. DalaalStreet delivers a seamless, premium marketplace experience for the modern legend.

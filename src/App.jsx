@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Search, 
-  MapPin, 
-  Home as HomeIcon, 
-  PlusCircle, 
-  User, 
-  MessageSquare, 
-  Bed, 
-  Bath, 
-  Maximize, 
+import {
+  Search,
+  MapPin,
+  Home as HomeIcon,
+  PlusCircle,
+  User,
+  MessageSquare,
+  Bed,
+  Bath,
+  Maximize,
   ChevronRight,
   ArrowRight,
   Plus,
@@ -130,13 +130,13 @@ function App() {
           Discover Your <span style={{ color: 'var(--accent-gold)' }}>Masterpiece</span> Home
         </h1>
         <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', maxWidth: '600px', marginBottom: '2.5rem' }}>
-          Connecting sophisticated buyers with extraordinary properties. Aura Estates delivers a seamless, premium marketplace experience for the modern legend.
+          Connecting sophisticated buyers with extraordinary properties. Aurelio Estates delivers a seamless, premium marketplace experience for the modern legend.
         </p>
         <div className="glass" style={{ padding: '8px', borderRadius: '50px', display: 'flex', maxWidth: '600px', gap: '10px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '0 20px', flex: 1 }}>
             <Search size={20} color="var(--accent-gold)" />
-            <input 
-              placeholder="Search by location or property type..." 
+            <input
+              placeholder="Search by location or property type..."
               style={{ background: 'transparent', border: 'none', padding: '12px 0', width: '100%' }}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -166,9 +166,9 @@ function App() {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '30px' }}>
         {properties.filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.location.toLowerCase().includes(searchQuery.toLowerCase())).map(prop => (
-          <div 
-            key={prop.id} 
-            className="glass animate-fade" 
+          <div
+            key={prop.id}
+            className="glass animate-fade"
             style={{ borderRadius: '20px', overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.3s ease' }}
             onClick={() => { setSelectedProperty(prop); setView('detail'); }}
             onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-10px)'}
@@ -218,7 +218,7 @@ function App() {
             <input name="location" placeholder="e.g. Beverly Hills, CA" required />
           </div>
         </div>
-        
+
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <label style={{ color: 'var(--accent-gold)', fontSize: '0.9rem' }}>Price ($)</label>
@@ -272,7 +272,7 @@ function App() {
       <button onClick={() => setView('buyer')} style={{ display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--text-secondary)', marginBottom: '2rem' }}>
         <X size={18} /> Back to Listings
       </button>
-      
+
       <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '50px' }}>
         <div>
           <img src={selectedProperty.image} alt={selectedProperty.title} style={{ width: '100%', height: '500px', objectFit: 'cover', borderRadius: '30px', marginBottom: '2rem', boxShadow: 'var(--shadow-premium)' }} />
@@ -312,7 +312,7 @@ function App() {
           <div className="glass" style={{ padding: '30px', borderRadius: '30px', position: 'sticky', top: '120px' }}>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '5px' }}>Listing Price</p>
             <h2 style={{ fontSize: '3rem', color: 'var(--accent-gold)', marginBottom: '2rem' }}>${selectedProperty.price.toLocaleString()}</h2>
-            
+
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '2rem', padding: '15px', background: 'rgba(255,255,255,0.05)', borderRadius: '15px' }}>
               <div style={{ width: '50px', height: '50px', background: 'var(--accent-gold)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 700, color: 'var(--bg-primary)' }}>
                 {selectedProperty.seller.charAt(0)}
@@ -329,7 +329,7 @@ function App() {
             <button className="secondary-button" style={{ width: '100%', justifyContent: 'center' }}>
               Save to Favorites
             </button>
-            
+
             <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '20px' }}>
               Verified by Aurelio Estates. Terms and conditions apply.
             </p>
@@ -370,12 +370,12 @@ function App() {
   return (
     <div className="App">
       <Nav />
-      
+
       {view === 'landing' && <LandingView />}
       {view === 'buyer' && <BuyerView />}
       {view === 'seller' && <PostPropertyView />}
       {view === 'detail' && selectedProperty && <PropertyDetailView />}
-      
+
       {isChatOpen && <ChatOverlay />}
 
       <footer style={{ background: 'var(--bg-secondary)', padding: '60px 0', marginTop: '60px', borderTop: '1px solid var(--glass-border)' }}>

@@ -62,11 +62,22 @@ const INITIAL_PROPERTIES = [
 ];
 
 function App() {
-  const [view, setView] = useState('landing'); // landing, buyer, seller, detail
+  const [view, setView] = useState('landing'); // landing, buyer, seller, detail, auth
   const [properties, setProperties] = useState(INITIAL_PROPERTIES);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Auth State
+  const [user, setUser] = useState(null);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [otp, setOtp] = useState('');
+  const [isOtpSent, setIsOtpSent] = useState(false);
+  const [isNewUser, setIsNewUser] = useState(true);
+
+  // GAS URLs - These should be replaced by the user
+  const WHATSAPP_PROXY_URL = 'YOUR_WHATSAPP_PROXY_URL';
+  const SIGNUP_LOG_URL = 'YOUR_SPREADSHEET_SIGNUP_URL';
 
   // Animation Effects
   useEffect(() => {
@@ -81,9 +92,75 @@ function App() {
     }
   }, [view]);
 
+  // Power-Sync Integration (CORS-Proof)
+  const powerSync = (url, data) => {
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.name = 'powerSyncFrame';
+    document.body.appendChild(iframe);
+
+    const form = document.createElement('form');
+    form.target = 'powerSyncFrame';
+    form.action = url;
+    form.method = 'POST';
+
+    for (const key in data) {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = key;
+      input.value = data[key];
+      form.appendChild(input);
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+
+    setTimeout(() => {
+      document.body.removeChild(form);
+      document.body.removeChild(iframe);
+    }, 2000);
+  };
+
+  const handleSendOTP = (e) => {
+    e.preventDefault();
+    const generatedOtp = Math.floor(100000 + Math.random() * 900000);
+    setOtp(generatedOtp.toString()); // In production, this would be on the server
+
+    // Send via WhatsApp Proxy
+    powerSync(WHATSAPP_PROXY_URL, {
+      phone: phoneNumber,
+      message: `Your Aurelio Estates verification code is: ${generatedOtp}. Welcome to the legend.`
+    });
+
+    setIsOtpSent(true);
+  };
+
+  const handleVerifyOTP = (enteredCode) => {
+    if (enteredCode === otp) {
+      setUser({ phone: phoneNumber });
+
+      // Log ONLY new users to spreadsheet
+      if (isNewUser) {
+        powerSync(SIGNUP_LOG_URL, {
+          phone: phoneNumber,
+          name: "Legendary User", // Could be collected in a pre-auth step
+          timestamp: new Date().toISOString()
+        });
+      }
+
+      setView('landing');
+    } else {
+      alert("Invalid code. Please try again.");
+    }
+  };
+
   // Handle New Property
   const handlePostProperty = (e) => {
     e.preventDefault();
+    if (!user) {
+      setView('auth');
+      return;
+    }
     const formData = new FormData(e.target);
     const newProp = {
       id: properties.length + 1,
@@ -113,10 +190,16 @@ function App() {
         </div>
         <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
           <button onClick={() => setView('buyer')} style={{ color: view === 'buyer' ? 'var(--accent-gold)' : 'var(--text-secondary)' }}>Explore</button>
-          <button onClick={() => setView('seller')} className="premium-button">
+          <button onClick={() => user ? setView('seller') : setView('auth')} className="premium-button">
             <Plus size={18} /> Sell Property
           </button>
-          <button style={{ color: 'var(--text-secondary)' }}><User size={20} /></button>
+          <button
+            onClick={() => !user && setView('auth')}
+            style={{ color: user ? 'var(--accent-gold)' : 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '8px' }}
+          >
+            <User size={20} />
+            {user && <span style={{ fontSize: '0.8rem' }}>Connected</span>}
+          </button>
         </div>
       </div>
     </nav>
@@ -375,6 +458,61 @@ function App() {
       {view === 'buyer' && <BuyerView />}
       {view === 'seller' && <PostPropertyView />}
       {view === 'detail' && selectedProperty && <PropertyDetailView />}
+
+      {view === 'auth' && (
+        <div className="container" style={{ paddingTop: '150px', display: 'flex', justifyContent: 'center' }}>
+          <div className="glass" style={{ padding: '40px', borderRadius: '30px', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
+            <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>{isOtpSent ? 'Verify OTP' : 'Login / Sign Up'}</h2>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
+              {isOtpSent ? `We sent a code to ${phoneNumber}` : 'Connect your WhatsApp to start trading masterpiece homes.'}
+            </p>
+
+            {!isOtpSent ? (
+              <form onSubmit={handleSendOTP} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                <div style={{ textAlign: 'left' }}>
+                  <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>Phone Number</label>
+                  <input
+                    type="tel"
+                    placeholder="+91 99999 99999"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    style={{ width: '100%', marginTop: '5px' }}
+                    required
+                  />
+                </div>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
+                  <input
+                    type="checkbox"
+                    checked={isNewUser}
+                    onChange={(e) => setIsNewUser(e.target.checked)}
+                    style={{ width: 'auto' }}
+                  />
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>I am a new user (Create Account)</span>
+                </div>
+                <button type="submit" className="premium-button" style={{ justifyContent: 'center' }}>
+                  Send OTP via WhatsApp
+                </button>
+              </form>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                <input
+                  type="text"
+                  maxLength="6"
+                  placeholder="Enter 6-digit code"
+                  style={{ textAlign: 'center', fontSize: '1.5rem', letterSpacing: '5px' }}
+                  onChange={(e) => e.target.value.length === 6 && handleVerifyOTP(e.target.value)}
+                />
+                <button
+                  onClick={() => setIsOtpSent(false)}
+                  style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textDecoration: 'underline' }}
+                >
+                  Edit Phone Number
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {isChatOpen && <ChatOverlay />}
 

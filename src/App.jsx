@@ -37,8 +37,8 @@ function App() {
   const [isNewUser, setIsNewUser] = useState(true);
 
   // GAS URLs
-  const WHATSAPP_PROXY_URL = 'https://script.google.com/macros/s/AKfycbyRP0RblHnJUQO6tcrp4upuecM7aakmxd8szOM8UBBhrdB4t0F5-P4YG6mmacPMXAZyXg/exec';
-  const SIGNUP_LOG_URL = 'https://script.google.com/macros/s/AKfycbyRP0RblHnJUQO6tcrp4upuecM7aakmxd8szOM8UBBhrdB4t0F5-P4YG6mmacPMXAZyXg/exec';
+  const WHATSAPP_PROXY_URL = 'https://script.google.com/macros/s/AKfycbxUzjYHqFUUxULp0z2wlZB_AhO57If_1guXP0IYlg0WVwdNlu0sA3tjeb3UuIDkKmt_qA/exec';
+  const SIGNUP_LOG_URL = 'https://script.google.com/macros/s/AKfycbxUzjYHqFUUxULp0z2wlZB_AhO57If_1guXP0IYlg0WVwdNlu0sA3tjeb3UuIDkKmt_qA/exec';
 
   // Animation Effects
   useEffect(() => {

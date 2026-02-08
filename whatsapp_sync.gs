@@ -8,7 +8,7 @@
  * 5. Deploy as Web App (Me, Anyone).
  */
 
-const BAILEYS_SERVER_URL = 'https://aurelio-bot.alwaysdata.net'; 
+const BAILEYS_SERVER_URL = 'https://tiny-beds-argue.loca.lt'; 
 const SPREADSHEET_ID = '1Jirb8fffEd0b7kD0-fF7u3MpAcvUuDH_nua661VKnzQ';
 
 function doGet(e) { return handleRequest(e); }

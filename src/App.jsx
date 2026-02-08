@@ -31,13 +31,14 @@ function App() {
   // Auth State
   const [user, setUser] = useState(null);
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [userName, setUserName] = useState('');
   const [otp, setOtp] = useState('');
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [isNewUser, setIsNewUser] = useState(true);
 
   // GAS URLs
-  const WHATSAPP_PROXY_URL = 'https://script.google.com/macros/s/AKfycbys849f2bF3fT3ssYMxDhAuACCcWJJ5mB-CVEL2thA8MT8aHYw-xrQSWDK37m3tFJ4pwQ/exec';
-  const SIGNUP_LOG_URL = 'https://script.google.com/macros/s/AKfycbys849f2bF3fT3ssYMxDhAuACCcWJJ5mB-CVEL2thA8MT8aHYw-xrQSWDK37m3tFJ4pwQ/exec';
+  const WHATSAPP_PROXY_URL = 'https://script.google.com/macros/s/AKfycbyRP0RblHnJUQO6tcrp4upuecM7aakmxd8szOM8UBBhrdB4t0F5-P4YG6mmacPMXAZyXg/exec';
+  const SIGNUP_LOG_URL = 'https://script.google.com/macros/s/AKfycbyRP0RblHnJUQO6tcrp4upuecM7aakmxd8szOM8UBBhrdB4t0F5-P4YG6mmacPMXAZyXg/exec';
 
   // Animation Effects
   useEffect(() => {
@@ -103,7 +104,7 @@ function App() {
       if (isNewUser) {
         powerSync(SIGNUP_LOG_URL, {
           phone: phoneNumber,
-          name: "Legendary User", // Could be collected in a pre-auth step
+          name: userName || "Legendary User",
           timestamp: new Date().toISOString()
         });
       }
@@ -165,21 +166,21 @@ function App() {
   );
 
   const LandingView = () => (
-    <div className="hero-section" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', background: 'linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url("https://images.unsplash.com/photo-1600585154340-be6199f7a096?auto=format&fit=crop&w=1920&q=80")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+    <div className="hero-section" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', background: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url("https://images.unsplash.com/photo-1600585154340-be6199f7a096?auto=format&fit=crop&w=1920&q=80")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
       <div className="container hero-content">
         <span className="badge">Welcome to DalaalStreet</span>
-        <h1 style={{ fontSize: '4.5rem', marginBottom: '1.5rem', maxWidth: '800px', lineHeight: 1.1 }}>
+        <h1 style={{ fontSize: 'clamp(3rem, 8vw, 5rem)', marginBottom: '1.5rem', maxWidth: '900px', lineHeight: 1.1, color: '#fff' }}>
           Discover Your <span className="text-gradient-gold">Masterpiece</span> Home
         </h1>
-        <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', maxWidth: '600px', marginBottom: '2.5rem' }}>
+        <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', maxWidth: '600px', marginBottom: '3rem' }}>
           Connecting sophisticated buyers with extraordinary properties. DalaalStreet delivers a seamless, premium marketplace experience for the modern legend.
         </p>
-        <div className="glass" style={{ padding: '8px', borderRadius: '50px', display: 'flex', maxWidth: '600px', gap: '10px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '0 20px', flex: 1 }}>
-            <Search size={20} color="var(--accent-gold)" />
+        <div className="glass" style={{ padding: '10px', borderRadius: '100px', display: 'flex', maxWidth: '600px', gap: '10px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0 25px', flex: 1 }}>
+            <Search size={22} color="var(--accent-gold)" />
             <input
-              placeholder="Search by location or property type..."
-              style={{ background: 'transparent', border: 'none', padding: '12px 0', width: '100%' }}
+              placeholder="Search by location..."
+              style={{ background: 'transparent', border: 'none', padding: '12px 0', width: '100%', color: '#fff' }}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
@@ -436,7 +437,18 @@ function App() {
             {!isOtpSent ? (
               <form onSubmit={handleSendOTP} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                 <div style={{ textAlign: 'left' }}>
-                  <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>Phone Number</label>
+                  <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>Full Name</label>
+                  <input
+                    type="text"
+                    placeholder="Enter your name"
+                    value={userName}
+                    onChange={(e) => setUserName(e.target.value)}
+                    style={{ width: '100%', marginTop: '5px' }}
+                    required
+                  />
+                </div>
+                <div style={{ textAlign: 'left' }}>
+                  <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>WhatsApp Number</label>
                   <input
                     type="tel"
                     placeholder="+91 99999 99999"

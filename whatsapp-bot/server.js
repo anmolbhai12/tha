@@ -7,6 +7,8 @@ const WhatsAppBot = require('./whatsapp');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+console.log('PORT config:', PORT);
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -29,8 +31,10 @@ const bot = new WhatsAppBot();
 
 // Start bot initialization
 console.log('🚀 Starting DalaalStreet WhatsApp Bot...');
-bot.initialize().catch(err => {
-    console.error('Failed to initialize bot:', err);
+bot.initialize().then(() => {
+    console.log('✅ Bot initialization started successfully');
+}).catch(err => {
+    console.error('❌ Failed to initialize bot:', err);
 });
 
 // Routes
@@ -126,7 +130,7 @@ app.get('/send-otp', async (req, res) => {
 });
 
 // Start server
-const serverIP = process.env.IP || '0.0.0.0';
-app.listen(PORT, serverIP, () => {
-    console.log(`\n✅ DalaalStreet Bot running at http://${serverIP}:${PORT}`);
+console.log('Attempting to start server on port:', PORT);
+app.listen(PORT, () => {
+    console.log(`\n✅ DalaalStreet Bot running on port ${PORT}`);
 });

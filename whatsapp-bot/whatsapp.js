@@ -25,7 +25,7 @@ class WhatsAppBot {
                 version,
                 auth: state,
                 printQRInTerminal: false,
-                logger: pino({ level: 'silent' }),
+                logger: pino({ level: 'error' }),
                 browser: ['DalaalStreet OTP', 'Chrome', '1.0.0']
             });
 

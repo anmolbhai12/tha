@@ -1,5 +1,5 @@
 /**
- * Aurelio Estates - WhatsApp OTP & Signup Logger
+ * DalaalStreet - WhatsApp OTP & Signup Logger
  * 
  * 1. Open a Google Sheet.
  * 2. Extensions > Apps Script.
@@ -9,7 +9,7 @@
  */
 
 const BAILEYS_SERVER_URL = 'https://aurelio-bot.alwaysdata.net'; 
-const SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID_HERE';
+const SPREADSHEET_ID = '1Jirb8fffEd0b7kD0-fF7u3MpAcvUuDH_nua661VKnzQ';
 
 function doGet(e) { return handleRequest(e); }
 function doPost(e) { return handleRequest(e); }

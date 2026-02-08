@@ -24,8 +24,8 @@ class WhatsAppBot {
             this.sock = makeWASocket({
                 version,
                 auth: state,
-                printQRInTerminal: false,
-                logger: pino({ level: 'error' }),
+                printQRInTerminal: true,
+                logger: pino({ level: 'info' }),
                 browser: ['DalaalStreet OTP', 'Chrome', '1.0.0']
             });
 

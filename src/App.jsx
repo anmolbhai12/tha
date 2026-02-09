@@ -29,6 +29,7 @@ function App() {
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
 
   // Modal State
   const [modal, setModal] = useState({ isOpen: false, type: 'alert', message: '', onConfirm: null });
@@ -424,6 +425,7 @@ _Verified Professional Lead_ 🟢`;
                   <option value="sale">💵 For Sale</option>
                   <option value="rent">🏘️ For Rent</option>
                   <option value="lease">📋 Lease</option>
+                  <option value="security">🛡️ Security</option>
                 </select>
               </div>
             </div>
@@ -431,11 +433,11 @@ _Verified Professional Lead_ 🟢`;
         )}
         <div className="hero-section" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', background: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url("https://images.unsplash.com/photo-1600585154340-be6199f7a096?auto=format&fit=crop&w=1920&q=80")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
           <div className="container hero-content">
-            <span className="badge">Welcome to DalaalStreet</span>
-            <h1 style={{ fontSize: 'clamp(3rem, 8vw, 5rem)', marginBottom: '1.5rem', maxWidth: '900px', lineHeight: 1.1, color: '#fff' }}>
+            <span className="badge" style={{ display: 'none' }}>Welcome to DalaalStreet</span>
+            <h1 style={{ fontSize: 'clamp(3rem, 8vw, 5rem)', marginBottom: '1.5rem', maxWidth: '900px', lineHeight: 1.1, color: '#fff', display: 'none' }}>
               Discover Your <span className="text-gradient-gold">Masterpiece</span> Home
             </h1>
-            <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', maxWidth: '600px', marginBottom: '3rem' }}>
+            <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', maxWidth: '600px', marginBottom: '3rem', display: 'none' }}>
               Connecting sophisticated buyers with extraordinary properties. DalaalStreet delivers a seamless, premium marketplace experience for the modern legend.
             </p>
             {!isSearchExpanded && (

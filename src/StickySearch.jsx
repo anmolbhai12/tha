@@ -95,6 +95,7 @@ const StickySearch = ({ isExpanded, onClose, searchQuery, setSearchQuery }) => {
                         <option value="sale">💵 For Sale</option>
                         <option value="rent">🏘️ For Rent</option>
                         <option value="lease">📋 Lease</option>
+                        <option value="security">🛡️ Security</option>
                     </select>
                 </div>
             </div>

@@ -1,6 +1,6 @@
 {
     "name": "dalaalstreet-otp-bot-v2",
-    "version": "3.0.0",
+    "version": "3.3.0",
     "description": "Robust WhatsApp OTP Bot for DalaalStreet",
     "main": "server.js",
     "scripts": {

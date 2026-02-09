@@ -14,7 +14,9 @@ import {
   Plus,
   X,
   Send,
-  Camera
+  Camera,
+  Mail,
+  Hash
 } from 'lucide-react';
 import { gsap } from 'gsap';
 
@@ -112,6 +114,9 @@ function App() {
   const [otp, setOtp] = useState('');
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [isNewUser, setIsNewUser] = useState(true);
+  const [email, setEmail] = useState('');
+  const [city, setCity] = useState('');
+  const [pincode, setPincode] = useState('');
 
   // GAS URLs & Bot Proxies
   const WHATSAPP_PROXY_URL = 'https://dalaalstreetss.alwaysdata.net/send-otp';
@@ -149,8 +154,25 @@ function App() {
     const generatedOtp = Math.floor(100000 + Math.random() * 900000);
     setOtp(generatedOtp.toString());
 
-    // Clean number: remove non-digits
-    const cleanPhone = phoneNumber.replace(/\D/g, '');
+    // Validation
+    if (!userName || userName.length < 3) {
+      showAlert("⚠️ Please enter a valid name (min 3 chars).");
+      return;
+    }
+    if (!cleanPhone || cleanPhone.length !== 10) {
+      showAlert("⚠️ Please enter a valid 10-digit mobile number.");
+      return;
+    }
+    if (isNewUser) {
+      if (!city || city.length < 2) {
+        showAlert("⚠️ City is required for new registration.");
+        return;
+      }
+      if (!pincode || pincode.length < 6) {
+        showAlert("⚠️ Valid 6-digit Pincode is required.");
+        return;
+      }
+    }
 
     // UI Feedback
     const btn = e.target.querySelector('button');
@@ -188,7 +210,7 @@ function App() {
 
   const handleVerifyOTP = (enteredCode) => {
     if (enteredCode === otp) {
-      const userData = { phone: phoneNumber, name: userName };
+      const userData = { phone: phoneNumber, name: userName, email, city, pincode };
       setUser(userData);
       localStorage.setItem('dalaal_user', JSON.stringify(userData));
 
@@ -202,7 +224,10 @@ function App() {
       if (isNewUser) {
         powerSync(SIGNUP_LOG_URL, {
           phone: phoneNumber,
-          name: userName || "Legendary User",
+          name: userName,
+          email: email || 'N/A',
+          city: city,
+          pincode: pincode,
           timestamp: new Date().toISOString()
         });
       }
@@ -300,11 +325,11 @@ _Verified Professional Lead_ 🟢`;
               <span style={{ fontSize: '0.9rem', color: 'var(--accent-gold)' }}>{user.name || 'Legend'}</span>
               <button
                 onClick={() => {
-                  if (confirm('Log out?')) {
+                  showConfirm('Are you sure you want to log out?', () => {
                     setUser(null);
                     localStorage.removeItem('dalaal_user');
                     setView('landing');
-                  }
+                  });
                 }}
                 style={{ color: 'var(--text-secondary)', cursor: 'pointer' }}
               >
@@ -721,6 +746,7 @@ _Verified Professional Lead_ 🟢`;
 
   return (
     <div className="App">
+      <CustomModal />
       <Nav />
 
       {view === 'landing' && <LandingView />}
@@ -741,25 +767,81 @@ _Verified Professional Lead_ 🟢`;
               <form onSubmit={handleSendOTP} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                 <div style={{ textAlign: 'left' }}>
                   <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>Full Name</label>
-                  <input
-                    type="text"
-                    placeholder="Enter your name"
-                    value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
-                    style={{ width: '100%', marginTop: '5px' }}
-                    required
-                  />
+                  <div style={{ position: 'relative' }}>
+                    <User size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <input
+                      type="text"
+                      placeholder="Enter your name"
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
+                      style={{ width: '100%', marginTop: '5px', paddingLeft: '45px' }}
+                      required
+                    />
+                  </div>
                 </div>
+
+                {isNewUser && (
+                  <>
+                    <div style={{ textAlign: 'left' }}>
+                      <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>Email (Optional)</label>
+                      <div style={{ position: 'relative' }}>
+                        <Mail size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
+                        <input
+                          type="email"
+                          placeholder="name@example.com"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          style={{ width: '100%', marginTop: '5px', paddingLeft: '45px' }}
+                        />
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '10px' }}>
+                      <div style={{ textAlign: 'left' }}>
+                        <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>City</label>
+                        <div style={{ position: 'relative' }}>
+                          <MapPin size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
+                          <input
+                            type="text"
+                            placeholder="Delhi"
+                            value={city}
+                            onChange={(e) => setCity(e.target.value)}
+                            style={{ width: '100%', marginTop: '5px', paddingLeft: '45px' }}
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div style={{ textAlign: 'left' }}>
+                        <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>Pincode</label>
+                        <div style={{ position: 'relative' }}>
+                          <Hash size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
+                          <input
+                            type="number"
+                            placeholder="110085"
+                            value={pincode}
+                            onChange={(e) => setPincode(e.target.value)}
+                            style={{ width: '100%', marginTop: '5px', paddingLeft: '45px' }}
+                            required
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+
                 <div style={{ textAlign: 'left' }}>
                   <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>WhatsApp Number</label>
-                  <input
-                    type="tel"
-                    placeholder="+91 99999 99999"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    style={{ width: '100%', marginTop: '5px' }}
-                    required
-                  />
+                  <div style={{ position: 'relative' }}>
+                    <div style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', fontWeight: 'bold', color: 'var(--accent-gold)' }}>+91</div>
+                    <input
+                      type="tel"
+                      placeholder="99999 99999"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      style={{ width: '100%', marginTop: '5px', paddingLeft: '45px' }}
+                      required
+                    />
+                  </div>
                 </div>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
                   <input
@@ -809,7 +891,7 @@ _Verified Professional Lead_ 🟢`;
             <a href="#">Contact</a>
           </div>
           <p style={{ marginTop: '30px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            © 2026 DalaalStreet. All rights reserved. <span style={{ opacity: 0.5 }}>v3.0 (Premium-Modals)</span>
+            © 2026 DalaalStreet. All rights reserved. <span style={{ opacity: 0.5 }}>v3.3 (Auth-Enh)</span>
           </p>
         </div>
       </footer>

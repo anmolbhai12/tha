@@ -19,9 +19,11 @@ app.use(express.static(__dirname, {
     etag: false,
     lastModified: false,
     setHeaders: (res, path) => {
-        if (path.endsWith('.html')) {
-            res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-        }
+        // FORCE NO CACHE FOR EVERYTHING
+        res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.set('Pragma', 'no-cache');
+        res.set('Expires', '0');
+        res.set('Surrogate-Control', 'no-store');
     }
 })); // Serve static files from the current directory
 

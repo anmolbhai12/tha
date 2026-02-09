@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://anmolbhai12.github.io/aurelio-estates/sitemap.xml

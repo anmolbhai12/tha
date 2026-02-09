@@ -1066,7 +1066,7 @@ _Verified Professional Lead_ 🟢`;
             <a href="#">{t.footer.contact}</a>
           </div>
           <p style={{ marginTop: '30px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            {t.footer.rights} <span style={{ opacity: 0.5 }}>v4.9 (Refined Edition)</span>
+            {t.footer.rights} <span style={{ opacity: 0.5 }}>v5.0 (Global Launch)</span>
           </p>
         </div>
       </footer>

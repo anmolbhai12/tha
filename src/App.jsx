@@ -922,82 +922,90 @@ _Verified Professional Lead_ 🟢`;
                   </div>
                 </div>
 
-                {isReturningUser ? (
-                  <div className="animate-fade" style={{
-                    padding: '20px',
-                    background: 'rgba(212, 175, 55, 0.1)',
-                    borderRadius: '20px',
-                    border: '1px solid var(--accent-gold)',
-                    textAlign: 'center'
-                  }}>
-                    <p style={{ color: 'var(--accent-gold)', fontWeight: 'bold', margin: 0 }}>
-                      Welcome Back, <span style={{ fontSize: '1.2rem' }}>{userName}</span>!
-                    </p>
-                    <p style={{ fontSize: '0.8rem', opacity: 0.7, marginTop: '5px' }}>Verify your identity to proceed</p>
-                  </div>
-                ) : (
-                  <div className="animate-fade" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                    <div style={{ textAlign: 'left' }}>
-                      <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>{t.auth.fullName}</label>
-                      <div style={{ position: 'relative' }}>
-                        <User size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
-                        <input
-                          type="text"
-                          placeholder="Enter your name"
-                          value={userName}
-                          onChange={(e) => setUserName(e.target.value)}
-                          style={{ width: '100%', marginTop: '5px', paddingLeft: '45px' }}
-                          required
-                        />
-                      </div>
+                {phoneNumber.replace(/\D/g, '').length >= 10 && (
+                  isReturningUser ? (
+                    <div className="animate-fade" style={{
+                      padding: '20px',
+                      background: 'rgba(212, 175, 55, 0.1)',
+                      borderRadius: '20px',
+                      border: '1px solid var(--accent-gold)',
+                      textAlign: 'center',
+                      marginBottom: '15px'
+                    }}>
+                      <p style={{ color: 'var(--accent-gold)', fontWeight: 'bold', margin: 0 }}>
+                        Welcome Back, <span style={{ fontSize: '1.2rem' }}>{userName}</span>!
+                      </p>
+                      <img
+                        src="https://img.icons8.com/isometric/50/checked-user-male.png"
+                        alt="returning"
+                        style={{ width: '40px', margin: '10px 0', opacity: 0.8 }}
+                      />
+                      <p style={{ fontSize: '0.8rem', opacity: 0.7 }}>We've found your account. Get your OTP to start trading.</p>
                     </div>
-
-                    <div style={{ textAlign: 'left' }}>
-                      <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>Email Address</label>
-                      <div style={{ position: 'relative' }}>
-                        <Mail size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
-                        <input
-                          type="email"
-                          placeholder="name@example.com"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          style={{ width: '100%', marginTop: '5px', paddingLeft: '45px' }}
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  ) : (
+                    <div className="animate-fade" style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '15px' }}>
                       <div style={{ textAlign: 'left' }}>
-                        <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>City</label>
+                        <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>{t.auth.fullName}</label>
                         <div style={{ position: 'relative' }}>
-                          <MapPin size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
+                          <User size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
                           <input
                             type="text"
-                            placeholder="Delhi"
-                            value={city}
-                            onChange={(e) => setCity(e.target.value)}
+                            placeholder="Enter your name"
+                            value={userName}
+                            onChange={(e) => setUserName(e.target.value)}
                             style={{ width: '100%', marginTop: '5px', paddingLeft: '45px' }}
                             required
                           />
                         </div>
                       </div>
+
                       <div style={{ textAlign: 'left' }}>
-                        <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>Pincode</label>
+                        <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>Email Address</label>
                         <div style={{ position: 'relative' }}>
-                          <Hash size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
+                          <Mail size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
                           <input
-                            type="number"
-                            placeholder="110085"
-                            value={pincode}
-                            onChange={(e) => setPincode(e.target.value)}
+                            type="email"
+                            placeholder="name@example.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             style={{ width: '100%', marginTop: '5px', paddingLeft: '45px' }}
                             required
                           />
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                        <div style={{ textAlign: 'left' }}>
+                          <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>City</label>
+                          <div style={{ position: 'relative' }}>
+                            <MapPin size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
+                            <input
+                              type="text"
+                              placeholder="Delhi"
+                              value={city}
+                              onChange={(e) => setCity(e.target.value)}
+                              style={{ width: '100%', marginTop: '5px', paddingLeft: '45px' }}
+                              required
+                            />
+                          </div>
+                        </div>
+                        <div style={{ textAlign: 'left' }}>
+                          <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>Pincode</label>
+                          <div style={{ position: 'relative' }}>
+                            <Hash size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
+                            <input
+                              type="number"
+                              placeholder="110085"
+                              value={pincode}
+                              onChange={(e) => setPincode(e.target.value)}
+                              style={{ width: '100%', marginTop: '5px', paddingLeft: '45px' }}
+                              required
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  )
                 )}
 
 
@@ -1040,7 +1048,7 @@ _Verified Professional Lead_ 🟢`;
             <a href="#">{t.footer.contact}</a>
           </div>
           <p style={{ marginTop: '30px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            {t.footer.rights} <span style={{ opacity: 0.5 }}>v4.6 (Bakenovation Flow)</span>
+            {t.footer.rights} <span style={{ opacity: 0.5 }}>v4.7 (Progressive Flow)</span>
           </p>
         </div>
       </footer>

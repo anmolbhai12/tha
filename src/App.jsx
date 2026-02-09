@@ -354,30 +354,18 @@ _Verified Professional Lead_ 🟢`;
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          {/* Language Switcher - REINFORCED VISIBILITY */}
-          <div className="glass" style={{
-            display: 'flex',
-            alignItems: 'center',
-            padding: '2px',
-            borderRadius: '20px',
-            fontSize: '0.8rem',
-            border: '1px solid var(--accent-gold)',
-            background: 'rgba(0,0,0,0.5)',
-            boxShadow: '0 0 10px rgba(197, 160, 89, 0.2)'
-          }}>
-            <div style={{ padding: '0 10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Languages size={14} color="var(--accent-gold)" />
-              <span style={{ color: 'var(--accent-gold)', fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: 'bold' }}>Language:</span>
-            </div>
+          {/* Language Switcher - ULTRA ROBUST */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '5px', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: '30px', border: '1px solid var(--accent-gold)', boxShadow: '0 0 15px rgba(197, 160, 89, 0.3)' }}>
+            <span style={{ fontSize: '1rem', padding: '0 5px' }}>🌐</span>
             <button
               onClick={() => setLanguage('en')}
-              style={{ padding: '4px 12px', borderRadius: '15px', background: language === 'en' ? 'var(--accent-gold)' : 'transparent', color: language === 'en' ? 'var(--bg-primary)' : 'var(--text-secondary)', fontWeight: 'bold' }}
+              style={{ padding: '4px 12px', borderRadius: '20px', background: language === 'en' ? 'var(--accent-gold)' : 'transparent', color: language === 'en' ? '#000' : '#fff', fontWeight: 'bold', fontSize: '0.8rem', border: 'none', cursor: 'pointer' }}
             >
               EN
             </button>
             <button
               onClick={() => setLanguage('hi')}
-              style={{ padding: '4px 12px', borderRadius: '15px', background: language === 'hi' ? 'var(--accent-gold)' : 'transparent', color: language === 'hi' ? 'var(--bg-primary)' : 'var(--text-secondary)', fontWeight: 'bold' }}
+              style={{ padding: '4px 12px', borderRadius: '20px', background: language === 'hi' ? 'var(--accent-gold)' : 'transparent', color: language === 'hi' ? '#000' : '#fff', fontWeight: 'bold', fontSize: '0.8rem', border: 'none', cursor: 'pointer' }}
             >
               HI
             </button>

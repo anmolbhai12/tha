@@ -433,7 +433,7 @@ _Verified Professional Lead_ 🟢`;
         )}
         <div className="hero-section" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', background: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url("https://images.unsplash.com/photo-1600585154340-be6199f7a096?auto=format&fit=crop&w=1920&q=80")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
           <div className="container hero-content">
-            <div style={{ opacity: isSearchExpanded ? 0.3 : 1, transition: 'all 0.6s ease', transform: isSearchExpanded ? 'scale(0.98)' : 'scale(1)' }}>
+            <div style={{ opacity: isSearchExpanded ? 0.1 : 1, transition: 'all 0.6s ease', transform: isSearchExpanded ? 'scale(0.98)' : 'scale(1)' }}>
               <span className="badge">Welcome to DalaalStreet</span>
               <h1 style={{ fontSize: 'clamp(3rem, 8vw, 5rem)', marginBottom: '1.5rem', maxWidth: '900px', lineHeight: 1.1, color: '#fff' }}>
                 Discover Your <span className="text-gradient-gold">Masterpiece</span> Home

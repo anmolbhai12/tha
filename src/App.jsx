@@ -433,13 +433,15 @@ _Verified Professional Lead_ 🟢`;
         )}
         <div className="hero-section" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', background: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url("https://images.unsplash.com/photo-1600585154340-be6199f7a096?auto=format&fit=crop&w=1920&q=80")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
           <div className="container hero-content">
-            <span className="badge">Welcome to DalaalStreet</span>
-            <h1 style={{ fontSize: 'clamp(3rem, 8vw, 5rem)', marginBottom: '1.5rem', maxWidth: '900px', lineHeight: 1.1, color: '#fff' }}>
-              Discover Your <span className="text-gradient-gold">Masterpiece</span> Home
-            </h1>
-            <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', maxWidth: '600px', marginBottom: '3rem' }}>
-              Connecting sophisticated buyers with extraordinary properties. DalaalStreet delivers a seamless, premium marketplace experience for the modern legend.
-            </p>
+            <div style={{ opacity: isSearchExpanded ? 0.3 : 1, transition: 'all 0.6s ease', transform: isSearchExpanded ? 'scale(0.98)' : 'scale(1)' }}>
+              <span className="badge">Welcome to DalaalStreet</span>
+              <h1 style={{ fontSize: 'clamp(3rem, 8vw, 5rem)', marginBottom: '1.5rem', maxWidth: '900px', lineHeight: 1.1, color: '#fff' }}>
+                Discover Your <span className="text-gradient-gold">Masterpiece</span> Home
+              </h1>
+              <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', maxWidth: '600px', marginBottom: '3rem' }}>
+                Connecting sophisticated buyers with extraordinary properties. DalaalStreet delivers a seamless, premium marketplace experience for the modern legend.
+              </p>
+            </div>
             {!isSearchExpanded && (
               <div className="glass" style={{ padding: '10px', borderRadius: '100px', display: 'flex', maxWidth: '600px', gap: '10px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0 25px', flex: 1 }}>

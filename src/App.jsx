@@ -90,30 +90,7 @@ function App() {
   };
 
   // Auth State - Lazy Initialization for Persistence
-  const [user, setUser] = useState(() => {
-    try {
-      const saved = localStorage.getItem('dalaal_user');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        console.log('✅ Lazy init restored user:', parsed);
-        fetch('https://dalaalstreetss.alwaysdata.net/client-log', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ msg: 'Restored User', data: parsed })
-        }).catch(e => console.error(e));
-        return parsed;
-      }
-    } catch (e) {
-      console.error('❌ Lazy init error:', e);
-      localStorage.removeItem('dalaal_user');
-    }
-    fetch('https://dalaalstreetss.alwaysdata.net/client-log', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ msg: 'No User Found', data: null })
-    }).catch(e => console.error(e));
-    return null;
-  });
+  const [user, setUser] = useState(null);
 
   const [phoneNumber, setPhoneNumber] = useState('');
   const [userName, setUserName] = useState('');
@@ -901,83 +878,65 @@ _Verified Professional Lead_ 🟢`;
 
             {!isOtpSent ? (
               <form onSubmit={handleSendOTP} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                {isReturningUser && (
-                  <div style={{
-                    padding: '15px',
-                    background: 'rgba(212, 175, 55, 0.1)',
-                    borderRadius: '15px',
-                    border: '1px solid var(--accent-gold)',
-                    marginBottom: '10px'
-                  }}>
-                    <p style={{ color: 'var(--accent-gold)', fontSize: '1rem', margin: 0 }}>
-                      {t.alerts.welcomeBack} <strong>{userName}</strong>!
-                    </p>
+                <div style={{ textAlign: 'left' }}>
+                  <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>{t.auth.fullName}</label>
+                  <div style={{ position: 'relative' }}>
+                    <User size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <input
+                      type="text"
+                      placeholder="Enter your name"
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
+                      style={{ width: '100%', marginTop: '5px', paddingLeft: '45px' }}
+                      required
+                    />
                   </div>
-                )}
+                </div>
 
-                {!isReturningUser && (
-                  <>
-                    <div style={{ textAlign: 'left' }}>
-                      <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>{t.auth.fullName}</label>
-                      <div style={{ position: 'relative' }}>
-                        <User size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
-                        <input
-                          type="text"
-                          placeholder="Enter your name"
-                          value={userName}
-                          onChange={(e) => setUserName(e.target.value)}
-                          style={{ width: '100%', marginTop: '5px', paddingLeft: '45px' }}
-                          required
-                        />
-                      </div>
-                    </div>
+                <div style={{ textAlign: 'left' }}>
+                  <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>Email (Optional)</label>
+                  <div style={{ position: 'relative' }}>
+                    <Mail size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <input
+                      type="email"
+                      placeholder="name@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      style={{ width: '100%', marginTop: '5px', paddingLeft: '45px' }}
+                    />
+                  </div>
+                </div>
 
-                    <div style={{ textAlign: 'left' }}>
-                      <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>Email (Optional)</label>
-                      <div style={{ position: 'relative' }}>
-                        <Mail size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
-                        <input
-                          type="email"
-                          placeholder="name@example.com"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          style={{ width: '100%', marginTop: '5px', paddingLeft: '45px' }}
-                        />
-                      </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '10px' }}>
+                  <div style={{ textAlign: 'left' }}>
+                    <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>City</label>
+                    <div style={{ position: 'relative' }}>
+                      <MapPin size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
+                      <input
+                        type="text"
+                        placeholder="Delhi"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        style={{ width: '100%', marginTop: '5px', paddingLeft: '45px' }}
+                        required
+                      />
                     </div>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '10px' }}>
-                      <div style={{ textAlign: 'left' }}>
-                        <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>City</label>
-                        <div style={{ position: 'relative' }}>
-                          <MapPin size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
-                          <input
-                            type="text"
-                            placeholder="Delhi"
-                            value={city}
-                            onChange={(e) => setCity(e.target.value)}
-                            style={{ width: '100%', marginTop: '5px', paddingLeft: '45px' }}
-                            required
-                          />
-                        </div>
-                      </div>
-                      <div style={{ textAlign: 'left' }}>
-                        <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>Pincode</label>
-                        <div style={{ position: 'relative' }}>
-                          <Hash size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
-                          <input
-                            type="number"
-                            placeholder="110085"
-                            value={pincode}
-                            onChange={(e) => setPincode(e.target.value)}
-                            style={{ width: '100%', marginTop: '5px', paddingLeft: '45px' }}
-                            required
-                          />
-                        </div>
-                      </div>
+                  </div>
+                  <div style={{ textAlign: 'left' }}>
+                    <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>Pincode</label>
+                    <div style={{ position: 'relative' }}>
+                      <Hash size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
+                      <input
+                        type="number"
+                        placeholder="110085"
+                        value={pincode}
+                        onChange={(e) => setPincode(e.target.value)}
+                        style={{ width: '100%', marginTop: '5px', paddingLeft: '45px' }}
+                        required
+                      />
                     </div>
-                  </>
-                )}
+                  </div>
+                </div>
 
                 <div style={{ textAlign: 'left' }}>
                   <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>{t.auth.whatsappNumber}</label>
@@ -1037,7 +996,7 @@ _Verified Professional Lead_ 🟢`;
             <a href="#">{t.footer.contact}</a>
           </div>
           <p style={{ marginTop: '30px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            {t.footer.rights} <span style={{ opacity: 0.5 }}>v4.2 (Search Fixed Edition)</span>
+            {t.footer.rights} <span style={{ opacity: 0.5 }}>v4.3 (Login Flow Restricted)</span>
           </p>
         </div>
       </footer>

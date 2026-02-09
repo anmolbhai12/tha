@@ -40,7 +40,7 @@ export const translations = {
             purpose: 'Purpose',
             category: 'Category',
             location: 'Location / Society',
-            price: 'Total Price (₹)',
+            price: 'Price (₹)',
             budget: 'Budget (₹)',
             areaSqft: 'Area (Sqft)',
             areaAcres: 'Area (Acres/Bigha)',
@@ -54,7 +54,14 @@ export const translations = {
             landType: 'Land Type',
             targetPlace: 'Target Place / Area Name',
             additionalSpecs: 'Additional Specs',
-            specsPlaceholder: 'Specify if looking for corner plot, park facing etc.'
+            specsPlaceholder: 'Specify if looking for corner plot, park facing etc.',
+            sellingPurpose: 'Purpose of Selling',
+            purposeOptions: {
+                financial: 'Financial Need',
+                relocating: 'Relocating',
+                upgrade: 'Upgrade',
+                investment: 'Investment/Exit'
+            }
         },
         detail: {
             back: 'Back to Listings',
@@ -86,7 +93,7 @@ export const translations = {
             login: 'Login / Sign Up',
             verify: 'Verify OTP',
             codeSent: 'We sent a code to',
-            connect: 'Connect your WhatsApp to start trading masterpiece homes.',
+            connect: 'Connect your WhatsApp to start exploring masterpiece homes.',
             fullName: 'Full Name',
             whatsappNumber: 'WhatsApp Number',
             newUserCheck: 'I am a new user (Create Account)',
@@ -153,7 +160,7 @@ export const translations = {
             purpose: 'उद्देश्य',
             category: 'श्रेणी',
             location: 'स्थान / सोसायटी',
-            price: 'कुल कीमत (₹)',
+            price: 'कीमत (₹)',
             budget: 'बजट (₹)',
             areaSqft: 'क्षेत्र (वर्ग फुट)',
             areaAcres: 'क्षेत्र (एकड़/बीघा)',
@@ -167,7 +174,14 @@ export const translations = {
             landType: 'भूमि का प्रकार',
             targetPlace: 'लक्षित स्थान / क्षेत्र का नाम',
             additionalSpecs: 'अतिरिक्त विशेषताएं',
-            specsPlaceholder: 'निर्दिष्ट करें कि क्या कोने का प्लॉट, पार्क फेसिंग आदि देख रहे हैं।'
+            specsPlaceholder: 'निर्दिष्ट करें कि क्या कोने का प्लॉट, पार्क फेसिंग आदि देख रहे हैं।',
+            sellingPurpose: 'बिक्री का उद्देश्य',
+            purposeOptions: {
+                financial: 'वित्तीय आवश्यकता',
+                relocating: 'स्थानांतरण',
+                upgrade: 'अपग्रेड',
+                investment: 'निवेश/निकास'
+            }
         },
         detail: {
             back: 'लिस्टिंग पर वापस जाएं',
@@ -199,7 +213,7 @@ export const translations = {
             login: 'लॉगिन / साइन अप',
             verify: 'ओटीपी सत्यापित करें',
             codeSent: 'हमने एक कोड भेजा है',
-            connect: 'प्रीमियम रियल एस्टेट ट्रेडिंग शुरू करने के लिए अपना व्हाट्सएप कनेक्ट करें।',
+            connect: 'प्रीमियम रियल एस्टेट खोजना शुरू करने के लिए अपना व्हाट्सएप कनेक्ट करें।',
             fullName: 'पूरा नाम',
             whatsappNumber: 'व्हाट्सएप नंबर',
             newUserCheck: 'मैं एक नया उपयोगकर्ता हूँ (खाता बनाएँ)',

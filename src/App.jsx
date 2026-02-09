@@ -686,6 +686,25 @@ _Verified Professional Lead_ 🟢`;
                   </div>
                 </div>
 
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                  <div className="input-group">
+                    <label>{t.seller.purpose}</label>
+                    <select name="purpose" className="glass">
+                      <option>{t.filters.forSale}</option>
+                      <option>{t.filters.forRent}</option>
+                      <option>{t.filters.lease}</option>
+                    </select>
+                  </div>
+                  <div className="input-group">
+                    <label>{t.seller.sellingPurpose}</label>
+                    <select name="sellingPurpose" className="glass">
+                      {Object.entries(t.seller.purposeOptions).map(([key, val]) => (
+                        <option key={key} value={val}>{val}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
                 <div className="input-group">
                   <label>{t.seller.location}</label>
                   <input name="location" placeholder="e.g. DLF Phase 5" required />
@@ -940,7 +959,7 @@ _Verified Professional Lead_ 🟢`;
                         alt="returning"
                         style={{ width: '40px', margin: '10px 0', opacity: 0.8 }}
                       />
-                      <p style={{ fontSize: '0.8rem', opacity: 0.7 }}>We've found your account. Get your OTP to start trading.</p>
+                      <p style={{ fontSize: '0.8rem', opacity: 0.7 }}>We've found your account. Get your OTP to find your dream property.</p>
                     </div>
                   ) : (
                     <div className="animate-fade" style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '15px' }}>
@@ -1048,7 +1067,7 @@ _Verified Professional Lead_ 🟢`;
             <a href="#">{t.footer.contact}</a>
           </div>
           <p style={{ marginTop: '30px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            {t.footer.rights} <span style={{ opacity: 0.5 }}>v4.7 (Progressive Flow)</span>
+            {t.footer.rights} <span style={{ opacity: 0.5 }}>v4.8 (Real Estate Edition)</span>
           </p>
         </div>
       </footer>

@@ -381,30 +381,77 @@ _Verified Professional Lead_ 🟢`;
     </nav>
   );
 
-  const LandingView = () => (
-    <div className="hero-section" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', background: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url("https://images.unsplash.com/photo-1600585154340-be6199f7a096?auto=format&fit=crop&w=1920&q=80")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
-      <div className="container hero-content">
-        <span className="badge">Welcome to DalaalStreet</span>
-        <h1 style={{ fontSize: 'clamp(3rem, 8vw, 5rem)', marginBottom: '1.5rem', maxWidth: '900px', lineHeight: 1.1, color: '#fff' }}>
-          Discover Your <span className="text-gradient-gold">Masterpiece</span> Home
-        </h1>
-        <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', maxWidth: '600px', marginBottom: '3rem' }}>
-          Connecting sophisticated buyers with extraordinary properties. DalaalStreet delivers a seamless, premium marketplace experience for the modern legend.
-        </p>
-        <div className="glass" style={{ padding: '10px', borderRadius: '100px', display: 'flex', maxWidth: '600px', gap: '10px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0 25px', flex: 1 }}>
-            <Search size={22} color="var(--accent-gold)" />
-            <input
-              placeholder="Search by location..."
-              style={{ background: 'transparent', border: 'none', padding: '12px 0', width: '100%', color: '#fff' }}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+  const LandingView = () => {
+    return (
+      <React.Fragment>
+        {isSearchExpanded && (
+          <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000, background: 'rgba(0, 0, 0, 0.98)', backdropFilter: 'blur(20px)', borderBottom: '1px solid var(--accent-gold)', padding: '20px 0', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }}>
+            <div className="container">
+              <div className="glass" style={{ padding: '10px', borderRadius: '100px', display: 'flex', maxWidth: '800px', margin: '0 auto', gap: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0 25px', flex: 1 }}>
+                  <Search size={22} color="var(--accent-gold)" />
+                  <input autoFocus placeholder="Search by location..." style={{ background: 'transparent', border: 'none', padding: '12px 0', width: '100%', color: '#fff' }} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                  <button onClick={() => setIsSearchExpanded(false)} style={{ background: 'transparent', border: 'none', color: 'var(--accent-gold)', cursor: 'pointer', padding: '5px' }}>
+                    <X size={20} />
+                  </button>
+                </div>
+                <button onClick={() => setView('buyer')} className="premium-button">Find Homes</button>
+              </div>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '15px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                <select className="glass" style={{ padding: '10px 20px', borderRadius: '30px', color: 'white', border: '1px solid var(--accent-gold)', fontSize: '0.9rem' }}>
+                  <option value="all">🏢 All Types</option>
+                  <option value="residential">🏠 Residential</option>
+                  <option value="commercial">🏪 Commercial</option>
+                  <option value="industrial">🏭 Industrial</option>
+                  <option value="agricultural">🌾 Agricultural</option>
+                </select>
+                <select className="glass" style={{ padding: '10px 20px', borderRadius: '30px', color: 'white', border: '1px solid var(--accent-gold)', fontSize: '0.9rem' }}>
+                  <option value="all">📐 Any Area</option>
+                  <option value="small">500-1000 sq ft</option>
+                  <option value="medium">1000-2000 sq ft</option>
+                  <option value="large">2000-5000 sq ft</option>
+                  <option value="xlarge">5000+ sq ft</option>
+                </select>
+                <select className="glass" style={{ padding: '10px 20px', borderRadius: '30px', color: 'white', border: '1px solid var(--accent-gold)', fontSize: '0.9rem' }}>
+                  <option value="all">💰 Any Budget</option>
+                  <option value="budget">Under ₹50L</option>
+                  <option value="mid">₹50L - ₹1Cr</option>
+                  <option value="premium">₹1Cr - ₹5Cr</option>
+                  <option value="luxury">₹5Cr+</option>
+                </select>
+                <select className="glass" style={{ padding: '10px 20px', borderRadius: '30px', color: 'white', border: '1px solid var(--accent-gold)', fontSize: '0.9rem' }}>
+                  <option value="all">🔑 Rent or Sale</option>
+                  <option value="sale">💵 For Sale</option>
+                  <option value="rent">🏘️ For Rent</option>
+                  <option value="lease">📋 Lease</option>
+                </select>
+              </div>
+            </div>
           </div>
-          <button onClick={() => setView('buyer')} className="premium-button">Find Homes</button>
+        )}
+        <div className="hero-section" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', background: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url("https://images.unsplash.com/photo-1600585154340-be6199f7a096?auto=format&fit=crop&w=1920&q=80")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+          <div className="container hero-content">
+            <span className="badge">Welcome to DalaalStreet</span>
+            <h1 style={{ fontSize: 'clamp(3rem, 8vw, 5rem)', marginBottom: '1.5rem', maxWidth: '900px', lineHeight: 1.1, color: '#fff' }}>
+              Discover Your <span className="text-gradient-gold">Masterpiece</span> Home
+            </h1>
+            <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', maxWidth: '600px', marginBottom: '3rem' }}>
+              Connecting sophisticated buyers with extraordinary properties. DalaalStreet delivers a seamless, premium marketplace experience for the modern legend.
+            </p>
+            {!isSearchExpanded && (
+              <div className="glass" style={{ padding: '10px', borderRadius: '100px', display: 'flex', maxWidth: '600px', gap: '10px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0 25px', flex: 1 }}>
+                  <Search size={22} color="var(--accent-gold)" />
+                  <input placeholder="Search by location..." style={{ background: 'transparent', border: 'none', padding: '12px 0', width: '100%', color: '#fff' }} onChange={(e) => setSearchQuery(e.target.value)} onFocus={() => setIsSearchExpanded(true)} />
+                </div>
+                <button onClick={() => setView('buyer')} className="premium-button">Find Homes</button>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </div>
-  );
+      </React.Fragment>
+    );
+  };
 
   const BuyerView = () => (
     <div className="container" style={{ paddingTop: '120px', paddingBottom: '100px' }}>

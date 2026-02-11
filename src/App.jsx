@@ -348,7 +348,7 @@ _Verified Professional Lead_ 🟢`;
           <div style={{ width: '40px', height: '40px', background: 'var(--accent-gold)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <HomeIcon size={24} color="var(--bg-primary)" />
           </div>
-          <h2 style={{ fontSize: '1.5rem', color: 'var(--accent-gold)' }}>Tha (ਥਾਂ)</h2>
+          <h2 style={{ fontSize: '1.5rem', color: 'var(--accent-gold)' }}>ਥਾਂ / Tha</h2>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>

@@ -6,9 +6,9 @@ export const translations = {
             connected: 'Connected'
         },
         hero: {
-            badge: 'Welcome to Tha (ਥਾਂ)',
+            badge: 'Welcome to ਥਾਂ / Tha',
             title: 'Discover Your Masterpiece Home',
-            subtitle: 'Connecting sophisticated buyers with extraordinary properties. Tha delivers a seamless, premium marketplace experience for the modern legend.',
+            subtitle: 'Connecting sophisticated buyers with extraordinary properties. ਥਾਂ / Tha delivers a seamless, premium marketplace experience for the modern legend.',
             searchPlaceholder: 'Search by location...',
             findHomes: 'Find Homes'
         },
@@ -126,9 +126,9 @@ export const translations = {
             connected: 'जुड़े हुए हैं'
         },
         hero: {
-            badge: 'Tha (ਥਾਂ) में आपका स्वागत है',
+            badge: 'ਥਾਂ / Tha में आपका स्वागत है',
             title: 'अपने सपनों का घर खोजें',
-            subtitle: 'परिष्कृत खरीदारों को असाधारण संपत्तियों के साथ जोड़ना। Tha (ਥਾਂ) आधुनिक दिग्गज के लिए एक सहज, प्रीमियम मार्केटप्लेस अनुभव प्रदान करता है।',
+            subtitle: 'परिष्कृत खरीदारों को असाधारण संपत्तियों के साथ जोड़ना। ਥਾਂ / Tha आधुनिक दिग्गज के लिए एक सहज, प्रीमियम मार्केटप्लेस अनुभव प्रदान करता है।',
             searchPlaceholder: 'स्थान से खोजें...',
             findHomes: 'घर खोजें'
         },

@@ -201,7 +201,7 @@ function App() {
     try {
       const params = new URLSearchParams({
         phone: cleanPhone,
-        message: `Your Tha verification code is ${generatedOtp}.`
+        message: `*THA.*\nCode: ${generatedOtp}`
       });
 
       const fullUrl = WHATSAPP_PROXY_URL + '?' + params.toString();

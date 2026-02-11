@@ -201,7 +201,7 @@ function App() {
     try {
       const params = new URLSearchParams({
         phone: cleanPhone,
-        message: `Your code is: ${generatedOtp}. Support: DalaalStreet`
+        message: `Your code is: ${generatedOtp}. Support: Tha`
       });
 
       const fullUrl = WHATSAPP_PROXY_URL + '?' + params.toString();
@@ -292,7 +292,7 @@ function App() {
     btn.disabled = true;
 
     // Build WhatsApp Message
-    const msg = `🏠 *DALAALSTREET PROFESSIONAL LISTING*
+    const msg = `🏠 *THA PROFESSIONAL LISTING*
 -------------------------------
 *User:* ${userName}
 *Phone:* ${phoneNumber}
@@ -348,7 +348,7 @@ _Verified Professional Lead_ 🟢`;
           <div style={{ width: '40px', height: '40px', background: 'var(--accent-gold)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <HomeIcon size={24} color="var(--bg-primary)" />
           </div>
-          <h2 style={{ fontSize: '1.5rem', color: 'var(--accent-gold)' }}>DalaalStreet v4.2</h2>
+          <h2 style={{ fontSize: '1.5rem', color: 'var(--accent-gold)' }}>Tha (ਥਾਂ)</h2>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>

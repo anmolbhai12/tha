@@ -6,9 +6,9 @@ export const translations = {
             connected: 'Connected'
         },
         hero: {
-            badge: 'Welcome to DalaalStreet',
+            badge: 'Welcome to Tha (ਥਾਂ)',
             title: 'Discover Your Masterpiece Home',
-            subtitle: 'Connecting sophisticated buyers with extraordinary properties. DalaalStreet delivers a seamless, premium marketplace experience for the modern legend.',
+            subtitle: 'Connecting sophisticated buyers with extraordinary properties. Tha delivers a seamless, premium marketplace experience for the modern legend.',
             searchPlaceholder: 'Search by location...',
             findHomes: 'Find Homes'
         },
@@ -69,7 +69,7 @@ export const translations = {
             listedBy: 'Listed by',
             contact: 'Contact Seller',
             save: 'Save to Favorites',
-            verified: 'Verified by DalaalStreet. Terms and conditions apply.',
+            verified: 'Verified by Tha. Terms and conditions apply.',
             price: 'Listing Price',
             description: 'Description',
             bedrooms: 'Bedrooms',
@@ -87,7 +87,7 @@ export const translations = {
             terms: 'Terms',
             privacy: 'Privacy',
             contact: 'Contact',
-            rights: '© 2026 DalaalStreet. All rights reserved.'
+            rights: '© 2026 Tha. All rights reserved.'
         },
         auth: {
             login: 'Login / Sign Up',
@@ -126,9 +126,9 @@ export const translations = {
             connected: 'जुड़े हुए हैं'
         },
         hero: {
-            badge: 'दलालस्ट्रीट में आपका स्वागत है',
+            badge: 'Tha (ਥਾਂ) में आपका स्वागत है',
             title: 'अपने सपनों का घर खोजें',
-            subtitle: 'परिष्कृत खरीदारों को असाधारण संपत्तियों के साथ जोड़ना। दलालस्ट्रीट आधुनिक दिग्गज के लिए एक सहज, प्रीमियम मार्केटप्लेस अनुभव प्रदान करता है।',
+            subtitle: 'परिष्कृत खरीदारों को असाधारण संपत्तियों के साथ जोड़ना। Tha (ਥਾਂ) आधुनिक दिग्गज के लिए एक सहज, प्रीमियम मार्केटप्लेस अनुभव प्रदान करता है।',
             searchPlaceholder: 'स्थान से खोजें...',
             findHomes: 'घर खोजें'
         },
@@ -189,7 +189,7 @@ export const translations = {
             listedBy: 'सूचीबद्ध किया गया',
             contact: 'विक्रेता से संपर्क करें',
             save: 'पसंदीदा में सहेजें',
-            verified: 'दलालस्ट्रीट द्वारा सत्यापित। नियम और शर्तें लागू।',
+            verified: 'Tha (ਥਾਂ) द्वारा सत्यापित। नियम और शर्तें लागू।',
             price: 'सूचीबद्ध मूल्य',
             description: 'विवरण',
             bedrooms: 'बेडरूम',
@@ -207,7 +207,7 @@ export const translations = {
             terms: 'शर्तें',
             privacy: 'गोपनीयता',
             contact: 'सम्पर्क',
-            rights: '© 2026 दलालस्ट्रीट। सर्वाधिकार सुरक्षित।'
+            rights: '© 2026 Tha (ਥਾਂ)। सर्वाधिकार सुरक्षित।'
         },
         auth: {
             login: 'लॉगिन / साइन अप',

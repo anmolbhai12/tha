@@ -26,7 +26,7 @@ class WhatsAppBot {
                 auth: state,
                 printQRInTerminal: false,
                 logger: pino({ level: 'silent' }),
-                browser: ['DalaalStreet OTP', 'Chrome', '1.0.0']
+                browser: ['Tha OTP', 'Chrome', '1.0.0']
             });
 
             this.sock.ev.on('connection.update', async (update) => {

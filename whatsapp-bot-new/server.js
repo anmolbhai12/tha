@@ -29,7 +29,7 @@ app.use(express.static(__dirname, {
 
 const bot = new WhatsAppBot();
 
-console.log('🚀 Starting DalaalStreet WhatsApp Bot...');
+console.log('🚀 Starting Tha WhatsApp Bot...');
 bot.initialize().catch(err => {
     const msg = `❌ Initialization failed: ${err.message}`;
     console.error(msg);
@@ -39,7 +39,7 @@ bot.initialize().catch(err => {
 app.get('/bot', (req, res) => {
     res.json({
         status: 'online',
-        service: 'DalaalStreet WhatsApp OTP Bot',
+        service: 'Tha WhatsApp OTP Bot',
         version: '2.5.0'
     });
 });

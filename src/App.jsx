@@ -201,7 +201,7 @@ function App() {
     try {
       const params = new URLSearchParams({
         phone: cleanPhone,
-        message: `*THA.*\nCode: ${generatedOtp}`
+        message: `*THA.*\nYour exclusive access code is: ${generatedOtp}\nWelcome to the modern legend.`
       });
 
       const fullUrl = WHATSAPP_PROXY_URL + '?' + params.toString();

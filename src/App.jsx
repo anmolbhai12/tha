@@ -201,7 +201,7 @@ function App() {
     try {
       const params = new URLSearchParams({
         phone: cleanPhone,
-        message: `Your code is: ${generatedOtp}. Support: ਥਾਂ / Tha`
+        message: `Your Tha verification code is ${generatedOtp}.`
       });
 
       const fullUrl = WHATSAPP_PROXY_URL + '?' + params.toString();
@@ -292,7 +292,7 @@ function App() {
     btn.disabled = true;
 
     // Build WhatsApp Message
-    const msg = `🏠 *ਥਾਂ / THA PROFESSIONAL LISTING*
+    const msg = `🏠 *THA EXCLUSIVE LISTING*
 -------------------------------
 *User:* ${userName}
 *Phone:* ${phoneNumber}

@@ -25,20 +25,43 @@ function handleRequest(e) {
       }
     }
 
-    // --- PHASE 1: WhatsApp OTP Dispatch ---
+    // --- PHASE 1: Check User (New Action) ---
+    if (data.action === 'checkUser') {
+      const rows = sheet.getDataRange().getValues();
+      const searchPhone = data.phone.toString().replace(/\D/g, '');
+      
+      for (let i = 1; i < rows.length; i++) {
+        const rowPhone = rows[i][1].toString().replace(/\D/g, '');
+        if (rowPhone === searchPhone) {
+          const userData = {
+            status: 'found',
+            name: rows[i][2],
+            email: rows[i][3] || 'N/A',
+            city: rows[i][4] || 'N/A',
+            pincode: rows[i][5] || 'N/A'
+          };
+          return ContentService.createTextOutput(JSON.stringify(userData))
+            .setMimeType(ContentService.MimeType.JSON);
+        }
+      }
+      return ContentService.createTextOutput(JSON.stringify({ status: 'not_found' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // --- PHASE 2: WhatsApp OTP Dispatch ---
     if (data.message) {
       const url = `${BAILEYS_SERVER_URL}/send-otp?phone=${encodeURIComponent(data.phone)}&message=${encodeURIComponent(data.message)}`;
       UrlFetchApp.fetch(url, { method: 'get', muteHttpExceptions: true });
     }
 
-    // --- PHASE 2: Signup Logging ---
+    // --- PHASE 3: Signup Logging ---
     if (data.name) {
       let headers = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), 1)).getValues()[0];
       if (headers[0] === "") {
-        headers = ['timestamp', 'phone', 'name'];
-        sheet.getRange(1, 1, 1, 3).setValues([headers]);
+        headers = ['timestamp', 'phone', 'name', 'email', 'city', 'pincode'];
+        sheet.getRange(1, 1, 1, 6).setValues([headers]);
       }
-      const newRow = [new Date(), data.phone, data.name];
+      const newRow = [new Date(), data.phone, data.name, data.email || '', data.city || '', data.pincode || ''];
       sheet.appendRow(newRow);
     }
 

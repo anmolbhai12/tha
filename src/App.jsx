@@ -171,14 +171,41 @@ function App() {
       return;
     }
 
-    // Check if returning user
-    checkReturningUser(phoneNumber);
-
     // UI Feedback
     const btn = e.target.querySelector('button[type="submit"]');
     const originalText = btn.innerText;
-    btn.innerText = "⚡ Sending OTP...";
+    btn.innerText = "⚡ checking...";
     btn.disabled = true;
+
+    // Check if returning user (Local + Remote)
+    const isLocalReturn = checkReturningUser(phoneNumber);
+
+    // Remote check via GAS
+    try {
+      const checkUrl = `${SIGNUP_LOG_URL}?action=checkUser&phone=${cleanPhone}`;
+      const checkRes = await fetch(checkUrl);
+      const checkData = await checkRes.json();
+
+      if (checkData.status === 'found') {
+        setIsReturningUser(true);
+        setUserName(checkData.name);
+        setEmail(checkData.email);
+        setCity(checkData.city);
+        setPincode(checkData.pincode);
+        setIsNewUser(false);
+        console.log('👤 Remote user found:', checkData.name);
+      } else {
+        // If not found remotely and not found locally, then it's a new user
+        if (!isLocalReturn) {
+          setIsReturningUser(false);
+          setIsNewUser(true);
+        }
+      }
+    } catch (err) {
+      console.warn('⚠️ Remote user check failed, following local/default logic:', err);
+    }
+
+    btn.innerText = "⚡ Sending OTP...";
 
     console.log('🚀 Dispatching OTP to Alwaysdata:', cleanPhone);
 
@@ -225,11 +252,24 @@ function App() {
     if (enteredCode === otp) {
       const cleanPhone = phoneNumber.replace(/\D/g, '');
 
-      // If returning user, complete login immediately
+      // If returning user (Found locally or remotely), complete login immediately
       if (isReturningUser) {
-        const userData = { phone: cleanPhone, name: userName, email: email || 'N/A', city: city || 'N/A', pincode: pincode || 'N/A' };
+        const userData = {
+          phone: cleanPhone,
+          name: userName,
+          email: email || 'N/A',
+          city: city || 'N/A',
+          pincode: pincode || 'N/A'
+        };
         setUser(userData);
         localStorage.setItem('dalaal_user', JSON.stringify(userData));
+
+        // Sync to registered users locally to avoid remote check next time
+        const registeredUsers = JSON.parse(localStorage.getItem('dalaal_registered_users') || '[]');
+        if (!registeredUsers.find(u => u.phone === cleanPhone)) {
+          registeredUsers.push({ phone: cleanPhone, name: userName });
+          localStorage.setItem('dalaal_registered_users', JSON.stringify(registeredUsers));
+        }
 
         fetch('https://dalaalstreetss.alwaysdata.net/client-log', {
           method: 'POST',
@@ -240,6 +280,7 @@ function App() {
         // Reset and go to landing
         setAuthStep(1);
         setView('landing');
+        showAlert(`Welcome back, ${userName}!`);
       } else {
         // New user - move to details collection step
         setAuthStep(3);

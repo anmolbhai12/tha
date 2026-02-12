@@ -109,6 +109,7 @@ function App() {
   const [email, setEmail] = useState('');
   const [city, setCity] = useState('');
   const [pincode, setPincode] = useState('');
+  const [authStep, setAuthStep] = useState(1); // 1: phone, 2: otp, 3: details
 
   // GAS URLs & Bot Proxies
   const WHATSAPP_PROXY_URL = 'https://dalaalstreetss.alwaysdata.net/send-otp';
@@ -164,34 +165,17 @@ function App() {
     // Clean number: remove non-digits
     const cleanPhone = phoneNumber.replace(/\D/g, '');
 
-    // Check if returning user
-    const isReturning = checkReturningUser(phoneNumber);
-
-    // Validation
-    if (!isReturning) {
-      // New users need full validation
-      if (!userName || userName.length < 3) {
-        showAlert("⚠️ Please enter a valid name (min 3 chars).");
-        return;
-      }
-      if (!city || city.length < 2) {
-        showAlert("⚠️ City is required for new registration.");
-        return;
-      }
-      if (!pincode || pincode.length < 6) {
-        showAlert("⚠️ Valid 6-digit Pincode is required.");
-        return;
-      }
-    }
-
-    // Phone validation for all users
+    // Phone validation
     if (!cleanPhone || cleanPhone.length !== 10) {
       showAlert("⚠️ Please enter a valid 10-digit mobile number.");
       return;
     }
 
+    // Check if returning user
+    checkReturningUser(phoneNumber);
+
     // UI Feedback
-    const btn = e.target.querySelector('button');
+    const btn = e.target.querySelector('button[type="submit"]');
     const originalText = btn.innerText;
     btn.innerText = "⚡ Sending OTP...";
     btn.disabled = true;
@@ -219,7 +203,7 @@ function App() {
 
       if (response.ok) {
         console.log('✅ Alwaysdata accepted the request.');
-        setIsOtpSent(true);
+        setAuthStep(2); // Move to OTP verification step
       } else {
         const errData = await response.json();
         showAlert(`❌ Error from Bot: ${errData.error || 'Unknown error'}`);
@@ -240,38 +224,82 @@ function App() {
   const handleVerifyOTP = (enteredCode) => {
     if (enteredCode === otp) {
       const cleanPhone = phoneNumber.replace(/\D/g, '');
-      const userData = { phone: cleanPhone, name: userName, email, city, pincode };
-      setUser(userData);
-      localStorage.setItem('dalaal_user', JSON.stringify(userData));
 
-      fetch('https://dalaalstreetss.alwaysdata.net/client-log', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ msg: 'Saved User', data: userData })
-      }).catch(e => console.error(e));
+      // If returning user, complete login immediately
+      if (isReturningUser) {
+        const userData = { phone: cleanPhone, name: userName, email: email || 'N/A', city: city || 'N/A', pincode: pincode || 'N/A' };
+        setUser(userData);
+        localStorage.setItem('dalaal_user', JSON.stringify(userData));
 
-      // Save to registered users list & log to spreadsheet ONLY if new user
-      if (!isReturningUser) {
-        // Add to localStorage registry
-        const registeredUsers = JSON.parse(localStorage.getItem('dalaal_registered_users') || '[]');
-        registeredUsers.push({ phone: cleanPhone, name: userName });
-        localStorage.setItem('dalaal_registered_users', JSON.stringify(registeredUsers));
+        fetch('https://dalaalstreetss.alwaysdata.net/client-log', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ msg: 'Returning User Login', data: userData })
+        }).catch(e => console.error(e));
 
-        // Log to spreadsheet
-        powerSync(SIGNUP_LOG_URL, {
-          phone: cleanPhone,
-          name: userName,
-          email: email || 'N/A',
-          city: city,
-          pincode: pincode,
-          timestamp: new Date().toISOString()
-        });
+        // Reset and go to landing
+        setAuthStep(1);
+        setView('landing');
+      } else {
+        // New user - move to details collection step
+        setAuthStep(3);
       }
-
-      setView('landing');
     } else {
       showAlert("Invalid code. Please try again.");
     }
+  };
+
+  // Handle new user signup completion (Step 3)
+  const handleCompleteSignup = (e) => {
+    e.preventDefault();
+
+    // Validation
+    if (!userName || userName.length < 3) {
+      showAlert("⚠️ Please enter a valid name (min 3 chars).");
+      return;
+    }
+    if (!email || !email.includes('@')) {
+      showAlert("⚠️ Please enter a valid email address.");
+      return;
+    }
+    if (!city || city.length < 2) {
+      showAlert("⚠️ City is required.");
+      return;
+    }
+    if (!pincode || pincode.length < 6) {
+      showAlert("⚠️ Valid 6-digit Pincode is required.");
+      return;
+    }
+
+    const cleanPhone = phoneNumber.replace(/\D/g, '');
+    const userData = { phone: cleanPhone, name: userName, email, city, pincode };
+    setUser(userData);
+    localStorage.setItem('dalaal_user', JSON.stringify(userData));
+
+    fetch('https://dalaalstreetss.alwaysdata.net/client-log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ msg: 'New User Signup', data: userData })
+    }).catch(e => console.error(e));
+
+    // Add to registered users list
+    const registeredUsers = JSON.parse(localStorage.getItem('dalaal_registered_users') || '[]');
+    registeredUsers.push({ phone: cleanPhone, name: userName });
+    localStorage.setItem('dalaal_registered_users', JSON.stringify(registeredUsers));
+
+    // Log to spreadsheet
+    powerSync(SIGNUP_LOG_URL, {
+      phone: cleanPhone,
+      name: userName,
+      email: email,
+      city: city,
+      pincode: pincode,
+      timestamp: new Date().toISOString()
+    });
+
+    // Reset and go to landing
+    setAuthStep(1);
+    setView('landing');
   };
 
   // Handle Professional Listing (Seller/Builder)
@@ -910,143 +938,159 @@ _Verified Professional Lead_ 🟢`;
       {view === 'auth' && (
         <div className="container" style={{ paddingTop: '150px', display: 'flex', justifyContent: 'center' }}>
           <div className="glass" style={{ padding: '40px', borderRadius: '30px', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
-            <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>{isOtpSent ? t.auth.verify : t.auth.login}</h2>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
-              {isOtpSent ? `${t.auth.codeSent} ${phoneNumber}` : t.auth.connect}
-            </p>
 
-            {!isOtpSent ? (
-              <form onSubmit={handleSendOTP} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                <div style={{ textAlign: 'left' }}>
-                  <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>Phone Number</label>
-                  <div style={{ position: 'relative' }}>
-                    <div style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', fontWeight: 'bold', color: 'var(--accent-gold)' }}>+91</div>
-                    <input
-                      type="tel"
-                      placeholder="99999 99999"
-                      value={phoneNumber}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setPhoneNumber(val);
-                        if (val.replace(/\D/g, '').length === 10) {
-                          checkReturningUser(val);
-                        } else {
-                          setIsReturningUser(false);
-                        }
-                      }}
-                      style={{ width: '100%', marginTop: '5px', paddingLeft: '45px' }}
-                      required
-                    />
-                  </div>
-                </div>
+            {/* Step 1: Phone Number Entry */}
+            {authStep === 1 && (
+              <>
+                <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>{t.auth.login}</h2>
+                <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
+                  {t.auth.connect}
+                </p>
 
-                {phoneNumber.replace(/\D/g, '').length >= 10 && (
-                  isReturningUser ? (
-                    <div className="animate-fade" style={{
-                      padding: '20px',
-                      background: 'rgba(212, 175, 55, 0.1)',
-                      borderRadius: '20px',
-                      border: '1px solid var(--accent-gold)',
-                      textAlign: 'center',
-                      marginBottom: '15px'
-                    }}>
-                      <p style={{ color: 'var(--accent-gold)', fontWeight: 'bold', margin: 0 }}>
-                        Welcome Back, <span style={{ fontSize: '1.2rem' }}>{userName}</span>!
-                      </p>
-                      <img
-                        src="https://img.icons8.com/isometric/50/checked-user-male.png"
-                        alt="returning"
-                        style={{ width: '40px', margin: '10px 0', opacity: 0.8 }}
+                <form onSubmit={handleSendOTP} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <div style={{ textAlign: 'left' }}>
+                    <label style={{ fontSize: '0.9rem', color: 'var(--accent-gold)', marginLeft: '10px', display: 'block', marginBottom: '8px' }}>
+                      Phone Number
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <div style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', fontWeight: 'bold', color: 'var(--accent-gold)' }}>
+                        +91
+                      </div>
+                      <input
+                        type="tel"
+                        placeholder="99999 99999"
+                        value={phoneNumber}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setPhoneNumber(val);
+                        }}
+                        style={{ width: '100%', paddingLeft: '50px', fontSize: '1.1rem' }}
+                        required
                       />
-                      <p style={{ fontSize: '0.8rem', opacity: 0.7 }}>We've found your account. Get your OTP to find your dream property.</p>
                     </div>
-                  ) : (
-                    <div className="animate-fade" style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '15px' }}>
-                      <div style={{ textAlign: 'left' }}>
-                        <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>{t.auth.fullName}</label>
-                        <div style={{ position: 'relative' }}>
-                          <User size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
-                          <input
-                            type="text"
-                            placeholder="Enter your name"
-                            value={userName}
-                            onChange={(e) => setUserName(e.target.value)}
-                            style={{ width: '100%', marginTop: '5px', paddingLeft: '45px' }}
-                            required
-                          />
-                        </div>
-                      </div>
+                  </div>
 
-                      <div style={{ textAlign: 'left' }}>
-                        <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>Email Address</label>
-                        <div style={{ position: 'relative' }}>
-                          <Mail size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
-                          <input
-                            type="email"
-                            placeholder="name@example.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            style={{ width: '100%', marginTop: '5px', paddingLeft: '45px' }}
-                            required
-                          />
-                        </div>
-                      </div>
+                  <button type="submit" className="premium-button" style={{ justifyContent: 'center', padding: '14px' }}>
+                    Continue
+                  </button>
+                </form>
+              </>
+            )}
 
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                        <div style={{ textAlign: 'left' }}>
-                          <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>City</label>
-                          <div style={{ position: 'relative' }}>
-                            <MapPin size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
-                            <input
-                              type="text"
-                              placeholder="Delhi"
-                              value={city}
-                              onChange={(e) => setCity(e.target.value)}
-                              style={{ width: '100%', marginTop: '5px', paddingLeft: '45px' }}
-                              required
-                            />
-                          </div>
-                        </div>
-                        <div style={{ textAlign: 'left' }}>
-                          <label style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', marginLeft: '10px' }}>Pincode</label>
-                          <div style={{ position: 'relative' }}>
-                            <Hash size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
-                            <input
-                              type="number"
-                              placeholder="110085"
-                              value={pincode}
-                              onChange={(e) => setPincode(e.target.value)}
-                              style={{ width: '100%', marginTop: '5px', paddingLeft: '45px' }}
-                              required
-                            />
-                          </div>
-                        </div>
+            {/* Step 2: OTP Verification */}
+            {authStep === 2 && (
+              <>
+                <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>{t.auth.verify}</h2>
+                <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
+                  {t.auth.codeSent} <strong style={{ color: 'var(--accent-gold)' }}>+91 {phoneNumber}</strong>
+                </p>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <input
+                    type="text"
+                    maxLength="6"
+                    placeholder={t.auth.enterCode}
+                    style={{ textAlign: 'center', fontSize: '1.8rem', letterSpacing: '8px', padding: '15px' }}
+                    onChange={(e) => e.target.value.length === 6 && handleVerifyOTP(e.target.value)}
+                    autoFocus
+                  />
+                  <button
+                    onClick={() => {
+                      setAuthStep(1);
+                      setPhoneNumber('');
+                    }}
+                    style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}
+                  >
+                    {t.auth.editPhone}
+                  </button>
+                </div>
+              </>
+            )}
+
+            {/* Step 3: New User Details */}
+            {authStep === 3 && (
+              <>
+                <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Almost There!</h2>
+                <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem', fontSize: '0.9rem' }}>
+                  Complete your profile to get started
+                </p>
+
+                <form onSubmit={handleCompleteSignup} style={{ display: 'flex', flexDirection: 'column', gap: '18px', textAlign: 'left' }}>
+                  <div>
+                    <label style={{ fontSize: '0.85rem', color: 'var(--accent-gold)', marginLeft: '10px', display: 'block', marginBottom: '6px' }}>
+                      {t.auth.fullName}
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <User size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
+                      <input
+                        type="text"
+                        placeholder="Enter your name"
+                        value={userName}
+                        onChange={(e) => setUserName(e.target.value)}
+                        style={{ width: '100%', paddingLeft: '45px' }}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.85rem', color: 'var(--accent-gold)', marginLeft: '10px', display: 'block', marginBottom: '6px' }}>
+                      Email Address
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <Mail size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
+                      <input
+                        type="email"
+                        placeholder="name@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        style={{ width: '100%', paddingLeft: '45px' }}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div>
+                      <label style={{ fontSize: '0.85rem', color: 'var(--accent-gold)', marginLeft: '10px', display: 'block', marginBottom: '6px' }}>
+                        City
+                      </label>
+                      <div style={{ position: 'relative' }}>
+                        <MapPin size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
+                        <input
+                          type="text"
+                          placeholder="Delhi"
+                          value={city}
+                          onChange={(e) => setCity(e.target.value)}
+                          style={{ width: '100%', paddingLeft: '45px' }}
+                          required
+                        />
                       </div>
                     </div>
-                  )
-                )}
+                    <div>
+                      <label style={{ fontSize: '0.85rem', color: 'var(--accent-gold)', marginLeft: '10px', display: 'block', marginBottom: '6px' }}>
+                        Pincode
+                      </label>
+                      <div style={{ position: 'relative' }}>
+                        <Hash size={18} color="var(--accent-gold)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
+                        <input
+                          type="text"
+                          placeholder="110085"
+                          value={pincode}
+                          onChange={(e) => setPincode(e.target.value)}
+                          style={{ width: '100%', paddingLeft: '45px' }}
+                          maxLength="6"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
 
-
-                <button type="submit" className="premium-button" style={{ justifyContent: 'center' }}>
-                  {t.auth.sendOtp}
-                </button>
-              </form>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                <input
-                  type="text"
-                  maxLength="6"
-                  placeholder={t.auth.enterCode}
-                  style={{ textAlign: 'center', fontSize: '1.5rem', letterSpacing: '5px' }}
-                  onChange={(e) => e.target.value.length === 6 && handleVerifyOTP(e.target.value)}
-                />
-                <button
-                  onClick={() => setIsOtpSent(false)}
-                  style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textDecoration: 'underline' }}
-                >
-                  {t.auth.editPhone}
-                </button>
-              </div>
+                  <button type="submit" className="premium-button" style={{ justifyContent: 'center', padding: '14px', marginTop: '10px' }}>
+                    Complete Signup
+                  </button>
+                </form>
+              </>
             )}
           </div>
         </div>

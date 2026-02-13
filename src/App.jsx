@@ -414,7 +414,7 @@ _Verified Professional Lead_ 🟢`;
     <nav className="glass" style={{ position: 'fixed', top: 0, width: '100%', zIndex: 1000, padding: '1rem 0' }}>
       <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => setView('landing')}>
-          <img src="/logo-tha-horizontal.svg" alt="Tha Logo" style={{ height: '50px', width: 'auto' }} />
+          <img src="/logo-tha-horizontal.svg" alt="Tha Logo" style={{ height: '70px', width: 'auto' }} />
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>

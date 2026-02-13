@@ -17,7 +17,8 @@ import {
   Camera,
   Mail,
   Hash,
-  Languages
+  Languages,
+  LogOut
 } from 'lucide-react';
 import { translations } from './translations';
 import { gsap } from 'gsap';
@@ -111,6 +112,9 @@ function App() {
   const [pincode, setPincode] = useState('');
   const [authStep, setAuthStep] = useState(1); // 1: phone, 2: otp, 3: details
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [tempName, setTempName] = useState('');
 
   // GAS URLs & Bot Proxies
   const WHATSAPP_PROXY_URL = 'https://dalaalstreetss.alwaysdata.net/send-otp';
@@ -411,6 +415,26 @@ _Verified Professional Lead_ 🟢`;
     }
   };
 
+  // Profile Actions
+  const handleUpdateName = () => {
+    if (!tempName.trim()) return;
+    const updatedUser = { ...user, name: tempName.trim() };
+    setUser(updatedUser);
+    localStorage.setItem('tha_user', JSON.stringify(updatedUser));
+
+    // Also update in registered list for returning logic
+    const registeredUsers = JSON.parse(localStorage.getItem('tha_registered_users') || '[]');
+    const userIndex = registeredUsers.findIndex(u => u.phone === user.phone);
+    if (userIndex !== -1) {
+      registeredUsers[userIndex].name = tempName.trim();
+      localStorage.setItem('tha_registered_users', JSON.stringify(registeredUsers));
+    }
+
+    setIsEditingName(false);
+    setShowProfileMenu(false);
+    showAlert(language === 'en' ? "Name updated successfully!" : "नाम सफलतापूर्वक अपडेट हो गया!");
+  };
+
   const Nav = () => (
     <nav className="glass" style={{ position: 'fixed', top: 0, width: '100%', zIndex: 1000, padding: '1rem 0' }}>
       <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -419,52 +443,100 @@ _Verified Professional Lead_ 🟢`;
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          {/* Language Switcher - ULTRA ROBUST */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '5px', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: '30px', border: '1px solid var(--accent-gold)', boxShadow: '0 0 15px rgba(197, 160, 89, 0.3)' }}>
-            <span style={{ fontSize: '1rem', padding: '0 5px' }}>🌐</span>
-            <button
-              onClick={() => setLanguage('en')}
-              style={{ padding: '4px 12px', borderRadius: '20px', background: language === 'en' ? 'var(--accent-gold)' : 'transparent', color: language === 'en' ? '#000' : '#fff', fontWeight: 'bold', fontSize: '0.8rem', border: 'none', cursor: 'pointer' }}
-            >
-              EN
-            </button>
-            <button
-              onClick={() => setLanguage('hi')}
-              style={{ padding: '4px 12px', borderRadius: '20px', background: language === 'hi' ? 'var(--accent-gold)' : 'transparent', color: language === 'hi' ? '#000' : '#fff', fontWeight: 'bold', fontSize: '0.8rem', border: 'none', cursor: 'pointer' }}
-            >
-              HI
-            </button>
-          </div>
-
           <a onClick={() => setView('buyer')} style={{ cursor: 'pointer', color: 'var(--text-primary)', fontWeight: '500' }}>{t.nav.marketplace}</a>
           <button onClick={() => user ? setView('seller') : setView('auth')} className="premium-button">
             <Plus size={18} /> {t.nav.postProperty}
           </button>
 
-          {user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontSize: '0.9rem', color: 'var(--accent-gold)' }}>{user.name || t.auth.legend}</span>
+          <div style={{ position: 'relative' }}>
+            {user ? (
+              <div
+                style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', background: 'rgba(255,215,0,0.05)', padding: '5px 15px', borderRadius: '30px', border: '1px solid var(--accent-gold)' }}
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+              >
+                <span style={{ fontSize: '0.9rem', color: 'var(--accent-gold)' }}>{user.name || t.auth.legend}</span>
+                <User size={20} color="var(--accent-gold)" />
+              </div>
+            ) : (
               <button
-                onClick={() => {
-                  showConfirm(t.alerts.logout, () => {
-                    setUser(null);
-                    localStorage.removeItem('tha_user');
-                    setView('landing');
-                  });
-                }}
-                style={{ color: 'var(--text-secondary)', cursor: 'pointer' }}
+                onClick={() => setView('auth')}
+                style={{ color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '8px' }}
               >
                 <User size={20} />
               </button>
-            </div>
-          ) : (
-            <button
-              onClick={() => setView('auth')}
-              style={{ color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '8px' }}
-            >
-              <User size={20} />
-            </button>
-          )}
+            )}
+
+            {/* Profile Dropdown Menu */}
+            {showProfileMenu && user && (
+              <div
+                className="glass"
+                style={{
+                  position: 'absolute',
+                  top: '120%',
+                  right: 0,
+                  width: '240px',
+                  padding: '15px',
+                  borderRadius: '20px',
+                  zIndex: 1001,
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                  border: '1px solid var(--accent-gold)'
+                }}
+              >
+                <div style={{ marginBottom: '15px', borderBottom: '1px solid rgba(212,175,55,0.2)', paddingBottom: '10px' }}>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>{language === 'en' ? 'Logged in as' : 'लॉग इन किया है'}</p>
+                  <p style={{ fontWeight: 'bold', color: 'var(--accent-gold)' }}>{user.name}</p>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{user.phone}</p>
+                </div>
+
+                {/* Edit Name Option */}
+                <button
+                  onClick={() => {
+                    setTempName(user.name);
+                    setIsEditingName(true);
+                  }}
+                  style={{ width: '100%', textAlign: 'left', padding: '10px', borderRadius: '10px', background: 'transparent', color: '#fff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
+                  className="menu-item-hover"
+                >
+                  <User size={16} /> {language === 'en' ? 'Edit Name' : 'नाम बदलें'}
+                </button>
+
+                {/* Language Switcher in Menu */}
+                <div style={{ padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '5px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-secondary)' }}>
+                    <Languages size={16} />
+                    <span style={{ fontSize: '0.9rem' }}>{language === 'en' ? 'Language' : 'भाषा'}</span>
+                  </div>
+                  <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', borderRadius: '15px', padding: '2px' }}>
+                    <button
+                      onClick={() => setLanguage('en')}
+                      style={{ padding: '3px 8px', borderRadius: '12px', fontSize: '0.7rem', border: 'none', background: language === 'en' ? 'var(--accent-gold)' : 'transparent', color: language === 'en' ? '#000' : '#fff', cursor: 'pointer' }}
+                    >EN</button>
+                    <button
+                      onClick={() => setLanguage('hi')}
+                      style={{ padding: '3px 8px', borderRadius: '12px', fontSize: '0.7rem', border: 'none', background: language === 'hi' ? 'var(--accent-gold)' : 'transparent', color: language === 'hi' ? '#000' : '#fff', cursor: 'pointer' }}
+                    >HI</button>
+                  </div>
+                </div>
+
+                <div style={{ height: '1px', background: 'rgba(212,175,55,0.2)', margin: '10px 0' }}></div>
+
+                <button
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    showConfirm(t.alerts.logout, () => {
+                      setUser(null);
+                      localStorage.removeItem('tha_user');
+                      setView('landing');
+                    });
+                  }}
+                  style={{ width: '100%', textAlign: 'left', padding: '10px', borderRadius: '10px', background: 'transparent', color: '#ff4444', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
+                  className="menu-item-hover"
+                >
+                  <LogOut size={16} /> {t.nav.logout || 'Logout'}
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </nav>
@@ -477,23 +549,7 @@ _Verified Professional Lead_ 🟢`;
           <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000, background: 'rgba(0, 0, 0, 0.6)', backdropFilter: 'blur(20px)', borderBottom: '1px solid var(--accent-gold)', padding: '20px 0', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }}>
             <div className="container">
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
-                <div className="glass" style={{ display: 'flex', alignItems: 'center', padding: '2px', borderRadius: '20px', fontSize: '0.8rem', border: '1px solid var(--accent-gold)', background: 'rgba(0,0,0,0.5)' }}>
-                  <div style={{ padding: '0 8px', display: 'flex', alignItems: 'center' }}>
-                    <Languages size={14} color="var(--accent-gold)" />
-                  </div>
-                  <button
-                    onClick={() => setLanguage('en')}
-                    style={{ padding: '4px 8px', borderRadius: '15px', background: language === 'en' ? 'var(--accent-gold)' : 'transparent', color: language === 'en' ? 'var(--bg-primary)' : 'var(--text-secondary)', fontWeight: 'bold' }}
-                  >
-                    EN
-                  </button>
-                  <button
-                    onClick={() => setLanguage('hi')}
-                    style={{ padding: '4px 8px', borderRadius: '15px', background: language === 'hi' ? 'var(--accent-gold)' : 'transparent', color: language === 'hi' ? 'var(--bg-primary)' : 'var(--text-secondary)', fontWeight: 'bold' }}
-                  >
-                    HI
-                  </button>
-                </div>
+                {/* Standalone language switcher removed as per request */}
               </div>
               <div className="glass" style={{ padding: '10px', borderRadius: '100px', display: 'flex', maxWidth: '800px', margin: '0 auto', gap: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0 25px', flex: 1 }}>
@@ -1161,6 +1217,41 @@ _Verified Professional Lead_ 🟢`;
                 </form>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Edit Name Modal */}
+      {isEditingName && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 2000, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+          <div className="glass" style={{ padding: '40px', borderRadius: '30px', width: '100%', maxWidth: '400px', textAlign: 'center', border: '1px solid var(--accent-gold)' }}>
+            <h2 style={{ color: 'var(--accent-gold)', marginBottom: '20px' }}>{language === 'en' ? 'Edit Your Name' : 'अपना नाम बदलें'}</h2>
+
+            <input
+              type="text"
+              value={tempName}
+              onChange={(e) => setTempName(e.target.value)}
+              className="premium-input"
+              placeholder={language === 'en' ? 'Enter new name' : 'नया नाम दर्ज करें'}
+              style={{ marginBottom: '20px', textAlign: 'center', width: '100%', padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,215,0,0.3)', borderRadius: '15px', color: '#fff' }}
+              autoFocus
+            />
+
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button
+                onClick={() => setIsEditingName(false)}
+                style={{ flex: 1, padding: '12px', borderRadius: '15px', background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer' }}
+              >
+                {language === 'en' ? 'Cancel' : 'रद्द करें'}
+              </button>
+              <button
+                onClick={handleUpdateName}
+                className="premium-button"
+                style={{ flex: 1 }}
+              >
+                {language === 'en' ? 'Save Changes' : 'बदलाव सुरक्षित करें'}
+              </button>
+            </div>
           </div>
         </div>
       )}

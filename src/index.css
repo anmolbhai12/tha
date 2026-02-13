@@ -235,3 +235,14 @@ textarea:focus {
     padding: 10px 20px !important;
   }
 }
+
+/* Profile Menu Utilities */
+.menu-item-hover {
+  transition: all 0.3s ease !important;
+}
+
+.menu-item-hover:hover {
+  background: rgba(212, 175, 55, 0.1) !important;
+  color: var(--accent-gold) !important;
+  padding-left: 15px !important;
+}

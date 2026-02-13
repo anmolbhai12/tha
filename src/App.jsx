@@ -92,10 +92,10 @@ function App() {
   // Auth State - Bakenovation Restore (Robust)
   const [user, setUser] = useState(() => {
     try {
-      const saved = localStorage.getItem('dalaal_user');
+      const saved = localStorage.getItem('tha_user');
       if (saved) return JSON.parse(saved);
     } catch (e) {
-      localStorage.removeItem('dalaal_user');
+      localStorage.removeItem('tha_user');
     }
     return null;
   });
@@ -119,7 +119,7 @@ function App() {
   // Check if user is returning (localStorage)
   const checkReturningUser = (phone) => {
     const cleanPhone = phone.replace(/\D/g, '');
-    const registeredUsers = JSON.parse(localStorage.getItem('dalaal_registered_users') || '[]');
+    const registeredUsers = JSON.parse(localStorage.getItem('tha_registered_users') || '[]');
     const existingUser = registeredUsers.find(u => u.phone === cleanPhone);
 
     if (existingUser) {
@@ -263,13 +263,13 @@ function App() {
           pincode: pincode || 'N/A'
         };
         setUser(userData);
-        localStorage.setItem('dalaal_user', JSON.stringify(userData));
+        localStorage.setItem('tha_user', JSON.stringify(userData));
 
         // Sync to registered users locally to avoid remote check next time
-        const registeredUsers = JSON.parse(localStorage.getItem('dalaal_registered_users') || '[]');
+        const registeredUsers = JSON.parse(localStorage.getItem('tha_registered_users') || '[]');
         if (!registeredUsers.find(u => u.phone === cleanPhone)) {
           registeredUsers.push({ phone: cleanPhone, name: userName });
-          localStorage.setItem('dalaal_registered_users', JSON.stringify(registeredUsers));
+          localStorage.setItem('tha_registered_users', JSON.stringify(registeredUsers));
         }
 
         fetch('https://dalaalstreetss.alwaysdata.net/client-log', {
@@ -316,7 +316,7 @@ function App() {
     const cleanPhone = phoneNumber.replace(/\D/g, '');
     const userData = { phone: cleanPhone, name: userName, email, city, pincode };
     setUser(userData);
-    localStorage.setItem('dalaal_user', JSON.stringify(userData));
+    localStorage.setItem('tha_user', JSON.stringify(userData));
 
     fetch('https://dalaalstreetss.alwaysdata.net/client-log', {
       method: 'POST',
@@ -325,9 +325,9 @@ function App() {
     }).catch(e => console.error(e));
 
     // Add to registered users list
-    const registeredUsers = JSON.parse(localStorage.getItem('dalaal_registered_users') || '[]');
+    const registeredUsers = JSON.parse(localStorage.getItem('tha_registered_users') || '[]');
     registeredUsers.push({ phone: cleanPhone, name: userName });
-    localStorage.setItem('dalaal_registered_users', JSON.stringify(registeredUsers));
+    localStorage.setItem('tha_registered_users', JSON.stringify(registeredUsers));
 
     // Log to spreadsheet
     powerSync(SIGNUP_LOG_URL, {
@@ -448,7 +448,7 @@ _Verified Professional Lead_ 🟢`;
                 onClick={() => {
                   showConfirm(t.alerts.logout, () => {
                     setUser(null);
-                    localStorage.removeItem('dalaal_user');
+                    localStorage.removeItem('tha_user');
                     setView('landing');
                   });
                 }}
@@ -1287,7 +1287,7 @@ _Verified Professional Lead_ 🟢`;
 
       <footer style={{ background: 'var(--bg-secondary)', padding: '60px 0', marginTop: '60px', borderTop: '1px solid var(--glass-border)' }}>
         <div className="container" style={{ textAlign: 'center' }}>
-          <h2 style={{ color: 'var(--accent-gold)', marginBottom: '15px' }}>DalaalStreet</h2>
+          <h2 style={{ color: 'var(--accent-gold)', marginBottom: '15px' }}>Tha</h2>
           <p style={{ color: 'var(--text-secondary)', maxWidth: '500px', margin: '0 auto 30px' }}>
             {t.footer.tagline}
           </p>

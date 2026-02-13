@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { translations } from './translations';
 import { gsap } from 'gsap';
+import FoxBot from './FoxBot.jsx';
 
 // Mock Data
 const INITIAL_PROPERTIES = [];
@@ -36,6 +37,7 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [language, setLanguage] = useState('en');
+  const [sortBy, setSortBy] = useState('latest'); // latest, priceHigh, priceLow, old
 
   const t = translations[language];
 
@@ -352,7 +354,7 @@ function App() {
   };
 
   // Handle Professional Listing (Seller/Builder)
-  const handlePostProfessional = async (e, type) => {
+  const handlePostProfessional = async (e, type, customMedia = []) => {
     e.preventDefault();
     if (!user) {
       setView('auth');
@@ -393,6 +395,34 @@ _Verified Professional Lead_ 🟢`;
       // Use the new /send-msg for custom text
       await fetch(`https://dalaalstreetss.alwaysdata.net/send-msg?${params.toString()}`);
 
+      // Multi-Media Handling
+      let mediaItems = [];
+
+      // Prioritize customMedia (from state) over formData (from input)
+      if (customMedia && customMedia.length > 0) {
+        mediaItems = customMedia;
+      } else {
+        // Fallback or for initial single file upload if used elsewhere
+        const mediaFiles = formData.getAll('propertyMedia');
+        if (mediaFiles && mediaFiles.length > 0 && mediaFiles[0].name) {
+          mediaItems = await Promise.all(mediaFiles.map(async (file) => {
+            return new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onload = (e) => resolve({
+                type: file.type.startsWith('video') ? 'video' : 'image',
+                url: e.target.result
+              });
+              reader.readAsDataURL(file);
+            });
+          }));
+        }
+      }
+
+      // Default placeholder if no media
+      if (mediaItems.length === 0) {
+        mediaItems = [{ type: 'image', url: "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=1350&q=80" }];
+      }
+
       const newProp = {
         id: properties.length + 1,
         title: data.title || `${data.category} in ${data.location}`,
@@ -402,9 +432,11 @@ _Verified Professional Lead_ 🟢`;
         baths: parseInt(data.baths || 0),
         sqft: parseInt(data.area),
         type: data.category || "Plot",
-        image: "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1350&q=80",
+        image: mediaItems[0].url, // Backwards compatibility
+        media: mediaItems,
         description: data.description || `Professional ${type} listing.`,
-        seller: userName || "Verified Professional"
+        seller: userName || "Verified Professional",
+        createdAt: new Date().toISOString()
       };
 
       setProperties([newProp, ...properties]);
@@ -670,55 +702,68 @@ _Verified Professional Lead_ 🟢`;
           <p style={{ color: 'var(--text-secondary)' }}>{t.buyer.subtitle} ({properties.length})</p>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
-          <select className="glass" style={{ padding: '10px 20px', borderRadius: '30px', color: 'white', border: '1px solid var(--border-color)' }}>
-            <option>{t.filters.allTypes}</option>
-            <option>{t.filters.residential}</option>
-            <option>{t.filters.commercial}</option>
-            <option>{t.filters.industrial}</option>
+          <select
+            className="glass"
+            style={{ padding: '10px 20px', borderRadius: '30px', color: 'white', border: '1px solid var(--accent-gold)' }}
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+          >
+            <option value="latest">Latest to Oldest</option>
+            <option value="old">Oldest to Latest</option>
+            <option value="priceHigh">Price: High to Low</option>
+            <option value="priceLow">Price: Low to High</option>
           </select>
         </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '30px' }}>
-        {properties.filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.location.toLowerCase().includes(searchQuery.toLowerCase())).map(prop => (
-          <div
-            key={prop.id}
-            className="glass animate-fade"
-            style={{ borderRadius: '20px', overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.3s ease' }}
-            onClick={() => {
-              if (user) {
-                setSelectedProperty(prop);
-                setView('detail');
-              } else {
-                setView('auth');
-              }
-            }}
-            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-10px)'}
-            onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-          >
-            <div style={{ height: '240px', overflow: 'hidden', position: 'relative' }}>
-              <img src={prop.image} alt={prop.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              <div style={{ position: 'absolute', top: '15px', right: '15px' }}>
-                <span className="badge" style={{ background: 'var(--bg-primary)' }}>{prop.type}</span>
+        {properties
+          .filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.location.toLowerCase().includes(searchQuery.toLowerCase()))
+          .sort((a, b) => {
+            if (sortBy === 'priceHigh') return b.price - a.price;
+            if (sortBy === 'priceLow') return a.price - b.price;
+            if (sortBy === 'old') return new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
+            return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+          })
+          .map(prop => (
+            <div
+              key={prop.id}
+              className="glass animate-fade"
+              style={{ borderRadius: '20px', overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.3s ease' }}
+              onClick={() => {
+                if (user) {
+                  setSelectedProperty(prop);
+                  setView('detail');
+                } else {
+                  setView('auth');
+                }
+              }}
+              onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-10px)'}
+              onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+            >
+              <div style={{ height: '240px', overflow: 'hidden', position: 'relative' }}>
+                <img src={prop.image} alt={prop.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <div style={{ position: 'absolute', top: '15px', right: '15px' }}>
+                  <span className="badge" style={{ background: 'var(--bg-primary)' }}>{prop.type}</span>
+                </div>
+              </div>
+              <div style={{ padding: '24px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}>
+                  <MapPin size={14} /> {prop.location}
+                </div>
+                <h3 style={{ fontSize: '1.5rem', marginBottom: '15px' }}>{prop.title}</h3>
+                <div style={{ display: 'flex', gap: '20px', marginBottom: '20px', color: 'var(--text-secondary)' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}><Bed size={16} /> {prop.beds}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}><Bath size={16} /> {prop.baths}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}><Maximize size={16} /> {prop.sqft}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--glass-border)', paddingTop: '20px' }}>
+                  <span style={{ fontSize: '1.5rem', color: 'var(--accent-gold)', fontWeight: 700 }}>₹{prop.price.toLocaleString()}</span>
+                  <button className="secondary-button" style={{ padding: '8px 20px', fontSize: '0.9rem' }}>{t.buyer.details}</button>
+                </div>
               </div>
             </div>
-            <div style={{ padding: '24px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}>
-                <MapPin size={14} /> {prop.location}
-              </div>
-              <h3 style={{ fontSize: '1.5rem', marginBottom: '15px' }}>{prop.title}</h3>
-              <div style={{ display: 'flex', gap: '20px', marginBottom: '20px', color: 'var(--text-secondary)' }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}><Bed size={16} /> {prop.beds}</span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}><Bath size={16} /> {prop.baths}</span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}><Maximize size={16} /> {prop.sqft} sqft</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--glass-border)', paddingTop: '20px' }}>
-                <span style={{ fontSize: '1.5rem', color: 'var(--accent-gold)', fontWeight: 700 }}>${prop.price.toLocaleString()}</span>
-                <button className="secondary-button" style={{ padding: '8px 20px', fontSize: '0.9rem' }}>{t.buyer.details}</button>
-              </div>
-            </div>
-          </div>
-        ))}
+          ))}
       </div>
     </div>
   );
@@ -726,9 +771,37 @@ _Verified Professional Lead_ 🟢`;
   const PostPropertyView = () => {
     const [activeTab, setActiveTab] = useState('seller');
     const [sellerType, setSellerType] = useState('residential');
+    const [previewMedia, setPreviewMedia] = useState([]); // Array of { type, url }
+
+    const handleMediaChange = (e) => {
+      const files = Array.from(e.target.files);
+      if (files.length > 0) {
+        const newMedia = [];
+        let processedCount = 0;
+
+        files.forEach(file => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            newMedia.push({
+              type: file.type.startsWith('video') ? 'video' : 'image',
+              url: reader.result
+            });
+            processedCount++;
+            if (processedCount === files.length) {
+              setPreviewMedia(prev => [...prev, ...newMedia]);
+            }
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+    };
+
+    const removeMedia = (index) => {
+      setPreviewMedia(prev => prev.filter((_, i) => i !== index));
+    };
 
     const sellerCategories = {
-      residential: [t.filters.residential, t.filters.commercial, t.filters.industrial, t.filters.agricultural], // simplification for demo or use original? I'll keep original but use translations for headers
+      residential: [t.filters.residential, t.filters.commercial, t.filters.industrial, t.filters.agricultural],
       commercial: ['Office Space', 'Shop/Showroom', 'Commercial Plot', 'Warehouse/Godown', 'Co-working'],
       industrial: ['Industrial Plot', 'Factory/Building', 'Shed/Godown'],
       agricultural: ['Farm Land', 'Farmhouse']
@@ -779,47 +852,89 @@ _Verified Professional Lead_ 🟢`;
               </div>
 
               <form onSubmit={(e) => {
-                // Intercept to add sellerType to the message
                 e.preventDefault();
-                const formData = new FormData(e.target);
-                const data = Object.fromEntries(formData.entries());
-
-                // Add sellerType to the data object for the handlePostProfessional function if needed, 
-                // or just pass it as an arg. For now, we'll modify the handlePostProfessional to handle it or inject it into the form data.
-                // Actually, handlePostProfessional reads from formData entries. 
-                // We can append it or just let the user function handle it.
-                // Let's modify handlePostProfessional to simplify. 
-                // But since we can't easily modify the outer function from here without rewriting the whole component,
-                // we'll inject a hidden input!
-                handlePostProfessional(e, 'seller');
+                handlePostProfessional(e, 'seller', previewMedia);
               }} className="glass" style={{ padding: '30px', borderRadius: '30px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
-                {/* Property Type Toggles */}
-                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '10px' }}>
-                  {['residential', 'commercial', 'industrial', 'agricultural'].map(type => (
-                    <button
-                      key={type}
-                      type="button"
-                      onClick={() => setSellerType(type)}
+                {/* Multi-Media Upload Section */}
+                <div style={{ marginBottom: '10px' }}>
+                  <label style={{ display: 'block', marginBottom: '10px', color: 'var(--accent-gold)' }}>Property Photos & Videos</label>
+
+                  {/* Gallery Preview */}
+                  {previewMedia.length > 0 && (
+                    <div style={{
+                      display: 'flex',
+                      gap: '10px',
+                      overflowX: 'auto',
+                      paddingBottom: '10px',
+                      marginBottom: '10px'
+                    }}>
+                      {previewMedia.map((media, index) => (
+                        <div key={index} style={{ position: 'relative', flex: '0 0 100px', height: '100px', borderRadius: '10px', overflow: 'hidden' }}>
+                          {media.type === 'video' ? (
+                            <video src={media.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          ) : (
+                            <img src={media.url} alt={`preview ${index}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => removeMedia(index)}
+                            style={{
+                              position: 'absolute', top: '5px', right: '5px',
+                              background: 'rgba(0,0,0,0.7)', color: 'white',
+                              border: 'none', borderRadius: '50%', width: '20px', height: '20px',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+                            }}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                      <div
+                        onClick={() => document.getElementById('prop-media-input').click()}
+                        style={{
+                          flex: '0 0 100px', height: '100px', borderRadius: '10px',
+                          border: '1px dashed var(--text-secondary)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          cursor: 'pointer', color: 'var(--text-secondary)'
+                        }}
+                      >
+                        <Plus size={24} />
+                      </div>
+                    </div>
+                  )}
+
+                  {!previewMedia.length && (
+                    <div
+                      onClick={() => document.getElementById('prop-media-input').click()}
                       style={{
-                        padding: '8px 16px',
+                        height: '150px',
                         borderRadius: '20px',
-                        border: '1px solid var(--accent-gold)',
-                        background: sellerType === type ? 'var(--accent-gold)' : 'transparent',
-                        color: sellerType === type ? 'var(--bg-primary)' : 'var(--text-secondary)',
-                        fontSize: '0.9rem',
-                        textTransform: 'capitalize',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease'
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '2px dashed var(--glass-border)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer'
                       }}
                     >
-                      {type}
-                    </button>
-                  ))}
-                </div>
+                      <div style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
+                        <Camera size={30} style={{ marginBottom: '10px', opacity: 0.7 }} />
+                        <p>Upload Photos & Videos</p>
+                      </div>
+                    </div>
+                  )}
 
-                {/* Hidden input to pass sellerType to the handler */}
-                <input type="hidden" name="activePropertyType" value={sellerType} />
+                  <input
+                    id="prop-media-input"
+                    type="file"
+                    name="propertyMedia"
+                    accept="image/*,video/*"
+                    multiple
+                    onChange={handleMediaChange}
+                    style={{ display: 'none' }}
+                  />
+                </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
                   <div className="input-group">
@@ -831,9 +946,9 @@ _Verified Professional Lead_ 🟢`;
                     </select>
                   </div>
                   <div className="input-group">
-                    <label>{t.seller.category} ({sellerType})</label>
+                    <label>{t.seller.category}</label>
                     <select name="category" className="glass">
-                      {sellerCategories[sellerType].map(cat => (
+                      {sellerCategories.residential.map(cat => (
                         <option key={cat} value={cat}>{cat}</option>
                       ))}
                     </select>
@@ -842,51 +957,32 @@ _Verified Professional Lead_ 🟢`;
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
                   <div className="input-group">
-                    <label>{t.seller.purpose}</label>
-                    <select name="purpose" className="glass">
-                      <option>{t.filters.forSale}</option>
-                      <option>{t.filters.forRent}</option>
-                      <option>{t.filters.lease}</option>
-                    </select>
+                    <label>{t.seller.location}</label>
+                    <input name="location" placeholder="e.g. DLF Phase 5" required />
                   </div>
-                  <div className="input-group">
-                    <label>{t.seller.sellingPurpose}</label>
-                    <select name="sellingPurpose" className="glass">
-                      {Object.entries(t.seller.purposeOptions).map(([key, val]) => (
-                        <option key={key} value={val}>{val}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="input-group">
-                  <label>{t.seller.location}</label>
-                  <input name="location" placeholder="e.g. DLF Phase 5" required />
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
                   <div className="input-group">
                     <label>{t.seller.price}</label>
                     <input name="price" type="number" placeholder="50,00,000" required />
                   </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
                   <div className="input-group">
                     <label>{sellerType === 'agricultural' ? t.seller.areaAcres : t.seller.areaSqft}</label>
                     <input name="area" type="text" placeholder={sellerType === 'agricultural' ? 'e.g. 2 Acres' : '1200'} required />
                   </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-                  {sellerType === 'residential' && (
-                    <>
-                      <div className="input-group"><label>{t.seller.beds}</label><input name="beds" type="number" placeholder="3" /></div>
-                      <div className="input-group"><label>{t.seller.baths}</label><input name="baths" type="number" placeholder="2" /></div>
-                    </>
-                  )}
-                  <div className="input-group" style={{ gridColumn: sellerType === 'residential' ? 'auto' : '1 / -1' }}>
+                  <div className="input-group">
                     <label>{t.seller.floors}</label>
                     <input name="totalFloors" type="text" placeholder={sellerType === 'residential' ? "Total Floors (e.g. 4)" : "Additional Details"} />
                   </div>
                 </div>
+
+                {sellerType === 'residential' && (
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                    <div className="input-group"><label>{t.seller.beds}</label><input name="beds" type="number" placeholder="3" /></div>
+                    <div className="input-group"><label>{t.seller.baths}</label><input name="baths" type="number" placeholder="2" /></div>
+                  </div>
+                )}
 
                 <button type="submit" className="premium-button" style={{ justifyContent: 'center' }}>{t.seller.postLead}</button>
               </form>
@@ -951,77 +1047,47 @@ _Verified Professional Lead_ 🟢`;
     );
   };
 
-  const PropertyDetailView = () => (
-    <div className="container" style={{ paddingTop: '120px', paddingBottom: '100px' }}>
-      <button onClick={() => setView('buyer')} style={{ display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--text-secondary)', marginBottom: '2rem' }}>
-        <X size={18} /> {t.detail.back}
-      </button>
+  const PropertyDetailView = () => {
+    const [selectedMediaIndex, setSelectedMediaIndex] = useState(0);
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '50px' }}>
-        <div>
-          <img src={selectedProperty.image} alt={selectedProperty.title} style={{ width: '100%', height: '500px', objectFit: 'cover', borderRadius: '30px', marginBottom: '2rem', boxShadow: 'var(--shadow-premium)' }} />
-          <div style={{ marginBottom: '2rem' }}>
-            <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
-              <span className="badge">{selectedProperty.type}</span>
-              <span className="badge" style={{ background: 'rgba(52, 211, 153, 0.1)', color: '#34d399' }}>{t.detail.active}</span>
-            </div>
-            <h1 style={{ fontSize: '3.5rem', marginBottom: '10px' }}>{selectedProperty.title}</h1>
-            <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <MapPin size={24} color="var(--accent-gold)" /> {selectedProperty.location}
-            </p>
-          </div>
+    // Normalize media for display (handle legacy properties)
+    const mediaList = selectedProperty.media || [{ type: 'image', url: selectedProperty.image }];
+    const currentMedia = mediaList[selectedMediaIndex] || mediaList[0];
 
-          <div style={{ display: 'flex', gap: '40px', padding: '30px', borderTop: '1px solid var(--glass-border)', borderBottom: '1px solid var(--glass-border)', marginBottom: '2rem' }}>
-            <div style={{ textAlign: 'center' }}>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase' }}>{t.detail.bedrooms}</p>
-              <h4 style={{ fontSize: '1.5rem' }}>{selectedProperty.beds}</h4>
+    return (
+      <div className="container" style={{ paddingTop: '120px', paddingBottom: '100px' }}>
+        <button onClick={() => setView('buyer')} style={{ display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--text-secondary)', marginBottom: '2rem' }}>
+          <X size={18} /> {t.detail.back}
+        </button>
+
+        <div className="glass" style={{ padding: '30px', borderRadius: '30px', position: 'sticky', top: '120px' }}>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '5px' }}>{t.detail.price}</p>
+          <h2 style={{ fontSize: '3rem', color: 'var(--accent-gold)', marginBottom: '2rem' }}>₹{selectedProperty.price.toLocaleString()}</h2>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '2rem', padding: '15px', background: 'rgba(255,255,255,0.05)', borderRadius: '15px' }}>
+            <div style={{ width: '50px', height: '50px', background: 'var(--accent-gold)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 700, color: 'var(--bg-primary)' }}>
+              {selectedProperty.seller.charAt(0)}
             </div>
-            <div style={{ textAlign: 'center' }}>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase' }}>{t.detail.bathrooms}</p>
-              <h4 style={{ fontSize: '1.5rem' }}>{selectedProperty.baths}</h4>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase' }}>{t.detail.sqft}</p>
-              <h4 style={{ fontSize: '1.5rem' }}>{selectedProperty.sqft}</h4>
+            <div>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{t.detail.listedBy}</p>
+              <h4 style={{ fontSize: '1.1rem' }}>{selectedProperty.seller}</h4>
             </div>
           </div>
 
-          <div>
-            <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{t.detail.description}</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', whiteSpace: 'pre-line' }}>{selectedProperty.description}</p>
-          </div>
-        </div>
+          <button onClick={() => setIsChatOpen(true)} className="premium-button" style={{ width: '100%', justifyContent: 'center', marginBottom: '15px' }}>
+            <MessageSquare size={18} /> {t.detail.contact}
+          </button>
+          <button className="secondary-button" style={{ width: '100%', justifyContent: 'center' }}>
+            {t.detail.save}
+          </button>
 
-        <div>
-          <div className="glass" style={{ padding: '30px', borderRadius: '30px', position: 'sticky', top: '120px' }}>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '5px' }}>{t.detail.price}</p>
-            <h2 style={{ fontSize: '3rem', color: 'var(--accent-gold)', marginBottom: '2rem' }}>${selectedProperty.price.toLocaleString()}</h2>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '2rem', padding: '15px', background: 'rgba(255,255,255,0.05)', borderRadius: '15px' }}>
-              <div style={{ width: '50px', height: '50px', background: 'var(--accent-gold)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 700, color: 'var(--bg-primary)' }}>
-                {selectedProperty.seller.charAt(0)}
-              </div>
-              <div>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{t.detail.listedBy}</p>
-                <h4 style={{ fontSize: '1.1rem' }}>{selectedProperty.seller}</h4>
-              </div>
-            </div>
-
-            <button onClick={() => setIsChatOpen(true)} className="premium-button" style={{ width: '100%', justifyContent: 'center', marginBottom: '15px' }}>
-              <MessageSquare size={18} /> {t.detail.contact}
-            </button>
-            <button className="secondary-button" style={{ width: '100%', justifyContent: 'center' }}>
-              {t.detail.save}
-            </button>
-
-            <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '20px' }}>
-              {t.detail.verified}
-            </p>
-          </div>
+          <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '20px' }}>
+            {t.detail.verified}
+          </p>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const ChatOverlay = () => (
     <div className="glass" style={{ position: 'fixed', bottom: '30px', right: '30px', width: '380px', height: '500px', borderRadius: '25px', zIndex: 1001, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}>
@@ -1322,6 +1388,14 @@ _Verified Professional Lead_ 🟢`;
           </p>
         </div>
       </footer>
+
+      {/* FOX - THE CLEVER AI BOT */}
+      <FoxBot
+        properties={properties}
+        setView={setView}
+        setSelectedProperty={setSelectedProperty}
+        userName={user?.name}
+      />
     </div>
   );
 }

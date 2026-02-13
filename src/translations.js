@@ -42,7 +42,7 @@ export const translations = {
             location: 'Location / Society',
             price: 'Price (₹)',
             budget: 'Budget (₹)',
-            areaSqft: 'Area (Sqft)',
+            areaSqft: 'Area',
             areaAcres: 'Area (Acres/Bigha)',
             areaGaj: 'Area',
             floors: 'Floors / Details',
@@ -74,7 +74,7 @@ export const translations = {
             description: 'Description',
             bedrooms: 'Bedrooms',
             bathrooms: 'Bathrooms',
-            sqft: 'Square Feet'
+            sqft: 'Area'
         },
         chat: {
             title: 'Chat with',
@@ -162,7 +162,7 @@ export const translations = {
             location: 'स्थान / सोसायटी',
             price: 'कीमत (₹)',
             budget: 'बजट (₹)',
-            areaSqft: 'क्षेत्र (वर्ग फुट)',
+            areaSqft: 'क्षेत्र',
             areaAcres: 'क्षेत्र (एकड़/बीघा)',
             areaGaj: 'क्षेत्र',
             floors: 'मंजिल / विवरण',
@@ -194,7 +194,7 @@ export const translations = {
             description: 'विवरण',
             bedrooms: 'बेडरूम',
             bathrooms: 'बाथरूम',
-            sqft: 'वर्ग फुट'
+            sqft: 'क्षेत्र'
         },
         chat: {
             title: 'के साथ चैट करें',

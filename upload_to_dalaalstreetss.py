@@ -6,7 +6,14 @@ HOST = 'ftp-dalaalstreetss.alwaysdata.net'
 USER = 'dalaalstreetss'
 PASS = 'dalaalstreets123'
 REMOTE_DIR = 'www'
-LOCAL_DIR = 'whatsapp-bot-new'
+REMOTE_DIR = 'www'
+LOCAL_DIR = '.' # Root directory
+FILES_TO_UPLOAD = [
+    ('server_remote_ver.js', 'server_remote_ver.js'),
+    ('remote_server.js', 'remote_server.js'),
+    ('whatsapp.js', 'whatsapp.js'),
+    ('remote_package.json', 'package.json') # Upload as package.json
+]
 
 def upload_files(ftp):
     print(f"Uploading bot files from {LOCAL_DIR} to {REMOTE_DIR}...")
@@ -23,16 +30,12 @@ def upload_files(ftp):
         print(f"Local dir {LOCAL_DIR} not found!")
         return
 
-    for file in os.listdir(LOCAL_DIR):
-        # Skip node_modules and other large/private items
-        if file in ['node_modules', '.git', 'auth_info', 'boot.log', '.env', 'package-lock.json']:
-            continue
-            
-        local_path = os.path.join(LOCAL_DIR, file)
-        if os.path.isfile(local_path):
+    for local_file, remote_file in FILES_TO_UPLOAD:
+        local_path = os.path.join(LOCAL_DIR, local_file)
+        if os.path.exists(local_path):
             with open(local_path, 'rb') as f:
-                print(f"   - Uploading {file}...")
-                ftp.storbinary(f'STOR {file}', f)
+                print(f"   - Uploading {local_file} as {remote_file}...")
+                ftp.storbinary(f'STOR {remote_file}', f)
     print("Upload complete.")
 
 def main():

@@ -18,7 +18,9 @@ import {
   Mail,
   Hash,
   Languages,
-  LogOut
+  LogOut,
+  ArrowLeft,
+  Check
 } from 'lucide-react';
 import { translations } from './translations';
 import { gsap } from 'gsap';
@@ -115,6 +117,7 @@ function App() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
   const [tempName, setTempName] = useState('');
+  const [isChoosingLanguage, setIsChoosingLanguage] = useState(false);
 
   // GAS URLs & Bot Proxies
   const WHATSAPP_PROXY_URL = 'https://dalaalstreetss.alwaysdata.net/send-otp';
@@ -452,7 +455,10 @@ _Verified Professional Lead_ 🟢`;
             {user ? (
               <div
                 style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', background: 'rgba(255,215,0,0.05)', padding: '5px 15px', borderRadius: '30px', border: '1px solid var(--accent-gold)' }}
-                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                onClick={() => {
+                  setShowProfileMenu(!showProfileMenu);
+                  if (!showProfileMenu) setIsChoosingLanguage(false);
+                }}
               >
                 <span style={{ fontSize: '0.9rem', color: 'var(--accent-gold)' }}>{user.name || t.auth.legend}</span>
                 <User size={20} color="var(--accent-gold)" />
@@ -488,52 +494,78 @@ _Verified Professional Lead_ 🟢`;
                   <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{user.phone}</p>
                 </div>
 
-                {/* Edit Name Option */}
-                <button
-                  onClick={() => {
-                    setTempName(user.name);
-                    setIsEditingName(true);
-                  }}
-                  style={{ width: '100%', textAlign: 'left', padding: '10px', borderRadius: '10px', background: 'transparent', color: '#fff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
-                  className="menu-item-hover"
-                >
-                  <User size={16} /> {language === 'en' ? 'Edit Name' : 'नाम बदलें'}
-                </button>
-
-                {/* Language Switcher in Menu */}
-                <div style={{ padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '5px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-secondary)' }}>
-                    <Languages size={16} />
-                    <span style={{ fontSize: '0.9rem' }}>{language === 'en' ? 'Language' : 'भाषा'}</span>
-                  </div>
-                  <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', borderRadius: '15px', padding: '2px' }}>
+                {isChoosingLanguage ? (
+                  <div style={{ marginTop: '5px' }}>
                     <button
-                      onClick={() => setLanguage('en')}
-                      style={{ padding: '3px 8px', borderRadius: '12px', fontSize: '0.7rem', border: 'none', background: language === 'en' ? 'var(--accent-gold)' : 'transparent', color: language === 'en' ? '#000' : '#fff', cursor: 'pointer' }}
-                    >EN</button>
+                      onClick={() => setIsChoosingLanguage(false)}
+                      style={{ width: '100%', textAlign: 'left', padding: '10px', borderRadius: '10px', background: 'transparent', color: 'var(--accent-gold)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}
+                      className="menu-item-hover"
+                    >
+                      <ArrowLeft size={16} /> {language === 'en' ? 'Back' : 'पीछे'}
+                    </button>
                     <button
-                      onClick={() => setLanguage('hi')}
-                      style={{ padding: '3px 8px', borderRadius: '12px', fontSize: '0.7rem', border: 'none', background: language === 'hi' ? 'var(--accent-gold)' : 'transparent', color: language === 'hi' ? '#000' : '#fff', cursor: 'pointer' }}
-                    >HI</button>
+                      onClick={() => { setLanguage('en'); setIsChoosingLanguage(false); }}
+                      style={{ width: '100%', textAlign: 'left', padding: '10px 15px', borderRadius: '10px', background: language === 'en' ? 'rgba(212,175,55,0.1)' : 'transparent', color: '#fff', border: '1px solid ' + (language === 'en' ? 'var(--accent-gold)' : 'transparent'), cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}
+                      className="menu-item-hover"
+                    >
+                      <span>English</span>
+                      {language === 'en' && <Check size={14} color="var(--accent-gold)" />}
+                    </button>
+                    <button
+                      onClick={() => { setLanguage('hi'); setIsChoosingLanguage(false); }}
+                      style={{ width: '100%', textAlign: 'left', padding: '10px 15px', borderRadius: '10px', background: language === 'hi' ? 'rgba(212,175,55,0.1)' : 'transparent', color: '#fff', border: '1px solid ' + (language === 'hi' ? 'var(--accent-gold)' : 'transparent'), cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                      className="menu-item-hover"
+                    >
+                      <span>हिन्दी</span>
+                      {language === 'hi' && <Check size={14} color="var(--accent-gold)" />}
+                    </button>
                   </div>
-                </div>
+                ) : (
+                  <>
+                    {/* Edit Name Option */}
+                    <button
+                      onClick={() => {
+                        setTempName(user.name);
+                        setIsEditingName(true);
+                      }}
+                      style={{ width: '100%', textAlign: 'left', padding: '10px', borderRadius: '10px', background: 'transparent', color: '#fff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
+                      className="menu-item-hover"
+                    >
+                      <User size={16} /> {language === 'en' ? 'Edit Name' : 'नाम बदलें'}
+                    </button>
 
-                <div style={{ height: '1px', background: 'rgba(212,175,55,0.2)', margin: '10px 0' }}></div>
+                    {/* Language Selection Trigger */}
+                    <button
+                      onClick={() => setIsChoosingLanguage(true)}
+                      style={{ width: '100%', textAlign: 'left', padding: '10px', borderRadius: '10px', background: 'transparent', color: '#fff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'space-between', marginTop: '5px' }}
+                      className="menu-item-hover"
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <Languages size={16} /> {language === 'en' ? 'Language' : 'भाषा'}
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--accent-gold)', fontSize: '0.8rem', opacity: 0.8 }}>
+                        {language === 'en' ? 'English' : 'हिन्दी'} <ChevronRight size={14} />
+                      </div>
+                    </button>
 
-                <button
-                  onClick={() => {
-                    setShowProfileMenu(false);
-                    showConfirm(t.alerts.logout, () => {
-                      setUser(null);
-                      localStorage.removeItem('tha_user');
-                      setView('landing');
-                    });
-                  }}
-                  style={{ width: '100%', textAlign: 'left', padding: '10px', borderRadius: '10px', background: 'transparent', color: '#ff4444', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
-                  className="menu-item-hover"
-                >
-                  <LogOut size={16} /> {t.nav.logout || 'Logout'}
-                </button>
+                    <div style={{ height: '1px', background: 'rgba(212,175,55,0.2)', margin: '10px 0' }}></div>
+
+                    <button
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        showConfirm(t.alerts.logout, () => {
+                          setUser(null);
+                          localStorage.removeItem('tha_user');
+                          setView('landing');
+                        });
+                      }}
+                      style={{ width: '100%', textAlign: 'left', padding: '10px', borderRadius: '10px', background: 'transparent', color: '#ff4444', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
+                      className="menu-item-hover"
+                    >
+                      <LogOut size={16} /> {t.nav.logout || 'Logout'}
+                    </button>
+                  </>
+                )}
               </div>
             )}
           </div>

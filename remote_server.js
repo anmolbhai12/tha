@@ -19,15 +19,17 @@ app.use(express.static(__dirname, {
     etag: false,
     lastModified: false,
     setHeaders: (res, path) => {
-        if (path.endsWith('.html')) {
-            res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-        }
+        // FORCE NO CACHE FOR EVERYTHING
+        res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.set('Pragma', 'no-cache');
+        res.set('Expires', '0');
+        res.set('Surrogate-Control', 'no-store');
     }
 })); // Serve static files from the current directory
 
 const bot = new WhatsAppBot();
 
-console.log('🚀 Starting DalaalStreet WhatsApp Bot...');
+console.log('🚀 Starting Tha WhatsApp Bot...');
 bot.initialize().catch(err => {
     const msg = `❌ Initialization failed: ${err.message}`;
     console.error(msg);
@@ -37,7 +39,7 @@ bot.initialize().catch(err => {
 app.get('/bot', (req, res) => {
     res.json({
         status: 'online',
-        service: 'DalaalStreet WhatsApp OTP Bot',
+        service: 'Tha WhatsApp OTP Bot',
         version: '2.5.0'
     });
 });
@@ -115,6 +117,23 @@ app.all('/send-otp', async (req, res) => {
     } catch (error) {
         console.error(`❌ Send Error: ${error.message} for ${phone}`);
         res.status(500).json({ error: error.message });
+    }
+});
+
+app.post('/client-log', (req, res) => {
+    const { msg, data } = req.body;
+    const logEntry = `[CLIENT] ${new Date().toISOString()} - ${msg} - ${JSON.stringify(data)}\n`;
+    console.log(logEntry.trim());
+    try { fs.appendFileSync(path.join(__dirname, 'client_debug.log'), logEntry); } catch (e) { }
+    res.sendStatus(200);
+});
+
+app.get('/client-logs', (req, res) => {
+    try {
+        const logs = fs.readFileSync(path.join(__dirname, 'client_debug.log'), 'utf8');
+        res.send(`<pre>${logs}</pre>`);
+    } catch (e) {
+        res.send('No client logs yet.');
     }
 });
 

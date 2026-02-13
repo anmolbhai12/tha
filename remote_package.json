@@ -1,10 +1,10 @@
 {
-    "name": "dalaalstreet-otp-bot-v2",
-    "version": "2.8.0",
-    "description": "Robust WhatsApp OTP Bot for DalaalStreet",
-    "main": "server.js",
+    "name": "tha-otp-bot",
+    "version": "4.0.0",
+    "description": "Robust WhatsApp OTP Bot for Tha",
+    "main": "remote_server.js",
     "scripts": {
-        "start": "node server.js"
+        "start": "node remote_server.js"
     },
     "dependencies": {
         "@whiskeysockets/baileys": "^6.7.0",

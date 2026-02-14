@@ -1,6 +1,6 @@
 {
     "name": "tha-otp-bot",
-    "version": "4.0.0",
+    "version": "4.0.1",
     "description": "Robust WhatsApp OTP Bot for Tha",
     "main": "server.js",
     "scripts": {

@@ -20,7 +20,8 @@ import {
   Languages,
   LogOut,
   ArrowLeft,
-  Check
+  Check,
+  Play
 } from 'lucide-react';
 import { translations } from './translations';
 import { gsap } from 'gsap';
@@ -139,6 +140,18 @@ function App() {
     }
     return false;
   };
+
+  // Load properties from backend
+  useEffect(() => {
+    fetch('https://dalaalstreetss.alwaysdata.net/properties')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setProperties(data);
+        }
+      })
+      .catch(err => console.error('Failed to load properties:', err));
+  }, []);
 
   // Animation Effects
   useEffect(() => {
@@ -367,7 +380,8 @@ function App() {
     // UI Feedback
     const btn = e.target.querySelector('button[type="submit"]');
     const originalText = btn.innerText;
-    btn.innerText = "⭐ Publishing...";
+    const hasVideo = customMedia.some(m => m.type === 'video');
+    btn.innerText = hasVideo ? "⭐ Uploading Video... (Please Wait)" : "⭐ Publishing...";
     btn.disabled = true;
 
     // Build WhatsApp Message
@@ -423,25 +437,70 @@ _Verified Professional Lead_ 🟢`;
         mediaItems = [{ type: 'image', url: "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=1350&q=80" }];
       }
 
-      const newProp = {
-        id: properties.length + 1,
+      // Prepare FormData for Multipart Upload
+      const formDataToSend = new FormData();
+
+      const payload = {
         title: data.title || `${data.category} in ${data.location}`,
         location: data.location,
         price: parseInt(data.price || data.budget),
+        area: parseInt(data.area),
+        category: data.category || "Plot",
+        purpose: data.purpose || "Buy",
         beds: parseInt(data.beds || 0),
         baths: parseInt(data.baths || 0),
-        sqft: parseInt(data.area),
-        type: data.category || "Plot",
-        image: mediaItems[0].url, // Backwards compatibility
-        media: mediaItems,
-        description: data.description || `Professional ${type} listing.`,
+        floors: data.floors,
+        description: data.description || `Professional listing.`,
         seller: userName || "Verified Professional",
-        createdAt: new Date().toISOString()
+        mobile: phoneNumber,
+        verified: true,
+        sold: false
       };
 
-      setProperties([newProp, ...properties]);
-      showAlert(t.alerts.listingLive);
-      setView('buyer');
+      // Append DATA field FIRST (Critical for Multer)
+      formDataToSend.append('data', JSON.stringify(payload));
+
+      // Append Files
+      if (customMedia && customMedia.length > 0) {
+        customMedia.forEach(media => {
+          if (media.file) {
+            formDataToSend.append('media', media.file);
+          }
+        });
+      }
+
+      // XHR for Progress Tracking
+      await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'https://dalaalstreetss.alwaysdata.net/properties');
+
+        xhr.upload.onprogress = (event) => {
+          if (event.lengthComputable) {
+            const percent = Math.round((event.loaded / event.total) * 100);
+            btn.innerText = `⭐ Uploading... ${percent}%`;
+          }
+        };
+
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            const savedProp = JSON.parse(xhr.responseText);
+            setProperties(prev => [savedProp, ...prev]);
+            showAlert(t.alerts.listingLive);
+            setView('buyer');
+            resolve(savedProp);
+          } else {
+            console.error("Upload failed:", xhr.statusText);
+            reject(new Error(xhr.statusText));
+          }
+        };
+
+        xhr.onerror = () => {
+          console.error("Network Error");
+          reject(new Error("Network Error"));
+        };
+
+        xhr.send(formDataToSend);
+      });
     } catch (err) {
       console.error(err);
       showAlert(t.alerts.listingFailed);
@@ -784,7 +843,8 @@ _Verified Professional Lead_ 🟢`;
           reader.onloadend = () => {
             newMedia.push({
               type: file.type.startsWith('video') ? 'video' : 'image',
-              url: reader.result
+              url: reader.result,
+              file: file
             });
             processedCount++;
             if (processedCount === files.length) {
@@ -872,7 +932,13 @@ _Verified Professional Lead_ 🟢`;
                       {previewMedia.map((media, index) => (
                         <div key={index} style={{ position: 'relative', flex: '0 0 100px', height: '100px', borderRadius: '10px', overflow: 'hidden' }}>
                           {media.type === 'video' ? (
-                            <video src={media.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <video
+                              src={media.url}
+                              controls
+                              playsInline
+                              preload="metadata"
+                              style={{ width: '100%', height: '100%', objectFit: 'cover', background: '#000' }}
+                            />
                           ) : (
                             <img src={media.url} alt={`preview ${index}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           )}
@@ -1075,7 +1141,7 @@ _Verified Professional Lead_ 🟢`;
           </div>
 
           <button onClick={() => setIsChatOpen(true)} className="premium-button" style={{ width: '100%', justifyContent: 'center', marginBottom: '15px' }}>
-            <MessageSquare size={18} /> {t.detail.contact}
+            <MessageSquare size={18} /> Chat on WhatsApp
           </button>
           <button className="secondary-button" style={{ width: '100%', justifyContent: 'center' }}>
             {t.detail.save}
@@ -1089,30 +1155,74 @@ _Verified Professional Lead_ 🟢`;
     );
   };
 
+  // Reusing ChatOverlay name to avoid changing all calls, but implementing as Contact Modal
   const ChatOverlay = () => (
-    <div className="glass" style={{ position: 'fixed', bottom: '30px', right: '30px', width: '380px', height: '500px', borderRadius: '25px', zIndex: 1001, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}>
-      <div style={{ background: 'var(--accent-gold)', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ width: '35px', height: '35px', background: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: 'var(--accent-gold)' }}>
-            {selectedProperty.seller.charAt(0)}
-          </div>
-          <p style={{ fontWeight: 600, color: 'var(--bg-primary)' }}>{t.chat.title} {selectedProperty.seller}</p>
-        </div>
-        <button onClick={() => setIsChatOpen(false)}><X size={20} color="var(--bg-primary)" /></button>
-      </div>
-      <div style={{ flex: 1, padding: '20px', display: 'flex', flexDirection: 'column', gap: '15px', overflowY: 'auto' }}>
-        <div style={{ alignSelf: 'flex-start', background: 'rgba(255,255,255,0.05)', padding: '12px 16px', borderRadius: '15px 15px 15px 0', maxWidth: '80%' }}>
-          <p style={{ fontSize: '0.9rem' }}>{t.chat.initialMsg}{selectedProperty.title}{t.chat.initialAltMsg}</p>
-        </div>
-        <div style={{ alignSelf: 'flex-end', background: 'var(--accent-gold)', color: 'var(--bg-primary)', padding: '12px 16px', borderRadius: '15px 15px 0 15px', maxWidth: '80%' }}>
-          <p style={{ fontSize: '0.9rem', fontWeight: 500 }}>Hello! Yes, it is still on the market. Would you like to schedule a virtual tour or a visit?</p>
-        </div>
-      </div>
-      <div style={{ padding: '20px', borderTop: '1px solid var(--glass-border)', display: 'flex', gap: '10px' }}>
-        <input placeholder={t.chat.placeholder} style={{ flex: 1, borderRadius: '20px', padding: '10px 15px' }} />
-        <button style={{ background: 'var(--accent-gold)', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Send size={18} color="var(--bg-primary)" />
+    <div className="glass" style={{
+      position: 'fixed',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      width: '90%',
+      maxWidth: '400px',
+      borderRadius: '25px',
+      zIndex: 1001,
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'hidden',
+      boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
+      background: 'rgba(20, 20, 20, 0.95)',
+      border: '1px solid var(--accent-gold)'
+    }}>
+      <div style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--glass-border)' }}>
+        <h3 style={{ margin: 0 }}>Contact Seller</h3>
+        <button onClick={() => setIsChatOpen(false)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}>
+          <X size={24} />
         </button>
+      </div>
+
+      <div style={{ padding: '30px', textAlign: 'center' }}>
+        <div style={{
+          width: '80px', height: '80px',
+          background: 'var(--accent-gold)',
+          borderRadius: '50%',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: '2rem', fontWeight: 700,
+          color: 'var(--bg-primary)',
+          margin: '0 auto 20px'
+        }}>
+          {selectedProperty.seller.charAt(0)}
+        </div>
+        <h2 style={{ marginBottom: '10px' }}>{selectedProperty.seller}</h2>
+        <p style={{ color: 'var(--text-secondary)', marginBottom: '30px' }}>
+          Verified Professional Seller
+        </p>
+
+        {selectedProperty.mobile ? (
+          <>
+            <div style={{
+              background: 'rgba(255,255,255,0.05)',
+              padding: '15px',
+              borderRadius: '15px',
+              marginBottom: '20px',
+              border: '1px dashed var(--text-secondary)'
+            }}>
+              <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '5px' }}>Mobile Number</p>
+              <h3 style={{ fontSize: '1.5rem', letterSpacing: '1px' }}>{selectedProperty.mobile}</h3>
+            </div>
+
+            <button
+              onClick={() => window.open(`https://wa.me/${selectedProperty.mobile.replace(/\D/g, '')}`, '_blank')}
+              className="premium-button"
+              style={{ width: '100%', justifyContent: 'center', background: '#25D366', border: 'none' }}
+            >
+              <MessageSquare size={20} /> Chat on WhatsApp
+            </button>
+          </>
+        ) : (
+          <div style={{ padding: '20px', background: 'rgba(255,100,100,0.1)', borderRadius: '15px' }}>
+            <p style={{ color: '#ff6b6b' }}>Contact details not available for this legacy listing.</p>
+          </div>
+        )}
       </div>
     </div>
   );

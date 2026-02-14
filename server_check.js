@@ -9,14 +9,6 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 8100;
 const HOST = process.env.IP || '0.0.0.0';
-
-// Auto-Unpack Dependencies
-try {
-    require('./unpack');
-} catch (e) {
-    console.error("Unpack failed:", e);
-}
-
 const logFile = path.join(__dirname, 'boot.log');
 const messageLogs = []; // Store last 20 messages for debugging
 
@@ -176,64 +168,15 @@ app.get('/ping', (req, res) => {
 });
 
 // --- PERSISTENCE LAYER ---
+
+// Ensure uploads directory exists
 const uploadDir = path.join(__dirname, 'uploads');
-try {
-    if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir);
-    }
-} catch (err) {
-    console.error("Failed to create upload dir:", err);
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir);
 }
 
+// Serve uploaded files statically
 app.use('/uploads', express.static(uploadDir));
-
-// Safe Multer Init
-let multer;
-let upload;
-let multerError = null;
-
-try {
-    multer = require('multer');
-    const storage = multer.diskStorage({
-        destination: (req, file, cb) => {
-            cb(null, uploadDir);
-        },
-        filename: (req, file, cb) => {
-            const ext = path.extname(file.originalname);
-            cb(null, `${Date.now()}-${Math.round(Math.random() * 1E9)}${ext}`);
-        }
-    });
-    upload = multer({
-        storage: storage,
-        limits: { fileSize: 500 * 1024 * 1024 }
-    });
-} catch (e) {
-    console.error("Multer failed to load:", e);
-    multerError = e.message;
-    // Mock upload middleware to prevent crash on route definition
-    upload = { array: () => (req, res, next) => next() };
-}
-
-app.get('/health', (req, res) => {
-    let modulesList = [];
-    try {
-        if (fs.existsSync(path.join(__dirname, 'node_modules'))) {
-            modulesList = fs.readdirSync(path.join(__dirname, 'node_modules'));
-        }
-    } catch (e) {
-        modulesList = ["Error listing: " + e.message];
-    }
-
-    res.json({
-        status: 'ok',
-        uptime: process.uptime(),
-        multerLoaded: !!multer,
-        multerError: multerError,
-        uploadDirExists: fs.existsSync(uploadDir),
-        node_modules: modulesList,
-        cwd: process.cwd()
-    });
-});
 
 const DATA_FILE = path.join(__dirname, 'properties.json');
 
@@ -262,6 +205,28 @@ const saveProperties = (properties) => {
     }
 };
 
+const multer = require('multer');
+
+// Configure Multer Storage
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const uploadDir = path.join(__dirname, 'uploads');
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir);
+        }
+        cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+        const ext = path.extname(file.originalname);
+        cb(null, `${Date.now()}-${Math.round(Math.random() * 1E9)}${ext}`);
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 500 * 1024 * 1024 } // 500MB limit
+});
+
 // GET /properties
 app.get('/properties', (req, res) => {
     const properties = readProperties();
@@ -287,8 +252,6 @@ app.post('/properties', upload.array('media'), (req, res) => {
 
         // Validate basic data
         if (!propertyData || !propertyData.seller || !propertyData.mobile) {
-            console.error("❌ Validation Failed. Data:", JSON.stringify(propertyData));
-            console.error("Req Body Keys:", Object.keys(req.body));
             return res.status(400).json({ error: 'Invalid property data' });
         }
 

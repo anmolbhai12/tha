@@ -382,6 +382,29 @@ function App() {
       return;
     }
 
+    // Hard Guard: Ensure user data is synced
+    if (!user.name || !user.phone) {
+      console.warn("⚠️ User profile data missing during POST. Attempting re-sync...");
+      const saved = localStorage.getItem('tha_user');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.name && parsed.phone) {
+          setUser(parsed);
+          // Proceed with the updated user object
+          user.name = parsed.name;
+          user.phone = parsed.phone;
+        } else {
+          showAlert("⚠️ Profile sync issue. Please log in again to publish.");
+          setView('auth');
+          return;
+        }
+      } else {
+        showAlert("⚠️ Authentication session lost. Please log in again.");
+        setView('auth');
+        return;
+      }
+    }
+
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
 
@@ -519,7 +542,14 @@ _Verified Professional Lead_ 🟢`;
     } catch (err) {
       console.error(err);
       const errorMsg = err.message || "Unknown error";
-      showAlert(`${t.alerts.listingFailed}\nReason: ${errorMsg}`);
+
+      // Specific error handling for 400
+      if (errorMsg.includes('Server Error (400)')) {
+        showAlert(`❌ Listing Failed: Profile Data Missing.\n\nPlease try refreshing or logging out and back in.`);
+      } else {
+        showAlert(`${t.alerts.listingFailed}\nReason: ${errorMsg}`);
+      }
+
       btn.innerText = originalText;
       btn.disabled = false;
     }

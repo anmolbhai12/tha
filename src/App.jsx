@@ -669,8 +669,8 @@ _Verified Professional Lead_ 🟢`;
             />
           </div>
 
-          {/* Quick Filters - Visible in Buyer mode or when searching */}
-          {(view === 'buyer' || searchQuery) && (
+          {/* Quick Filters - Visible in Landing/Buyer mode or when searching */}
+          {(view === 'landing' || view === 'buyer' || searchQuery) && (
             <div className="animate-fade" style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '5px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               <select
                 className="glass"

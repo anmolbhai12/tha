@@ -142,7 +142,7 @@ function App() {
 
     if (callView === 'call' && callId) {
       setView('call');
-      setSelectedProperty({ id: callId.split('-')[1], title: 'Secure Voice Call' });
+      setSelectedProperty({ id: callId?.split('-')?.[1], title: 'Secure Voice Call' });
     }
   }, []);
 

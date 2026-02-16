@@ -496,7 +496,7 @@ _Verified Professional Lead_ 🟢`;
         purpose: data.purpose || "Buy",
         beds: parseInt(data.beds || 0),
         baths: parseInt(data.baths || 0),
-        floors: data.floors,
+        floors: data.totalFloors || data.floors,
         description: data.description || `Professional listing.`,
         seller: user.name || "Verified Professional",
         mobile: user.phone,
@@ -1688,6 +1688,12 @@ _Verified Professional Lead_ 🟢`;
     const [location, setLocation] = useState(editingProperty.location);
     const [title, setTitle] = useState(editingProperty.title || `${editingProperty.category} in ${editingProperty.location}`);
     const [description, setDescription] = useState(editingProperty.description);
+    const [purpose, setPurpose] = useState(editingProperty.purpose || 'For Sale');
+    const [category, setCategory] = useState(editingProperty.category || 'Residential');
+    const [area, setArea] = useState(editingProperty.area || editingProperty.sqft || '');
+    const [beds, setBeds] = useState(editingProperty.beds || '');
+    const [baths, setBaths] = useState(editingProperty.baths || '');
+    const [floors, setFloors] = useState(editingProperty.floors || '');
 
     return (
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 2000, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
@@ -1707,15 +1713,72 @@ _Verified Professional Lead_ 🟢`;
               <label style={{ color: 'var(--accent-gold)', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>Location</label>
               <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} className="premium-input" style={{ width: '100%' }} />
             </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+              <div>
+                <label style={{ color: 'var(--accent-gold)', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>Purpose</label>
+                <select value={purpose} onChange={(e) => setPurpose(e.target.value)} className="premium-input" style={{ width: '100%', background: 'rgb(30, 30, 30)' }}>
+                  <option>For Sale</option>
+                  <option>For Rent</option>
+                  <option>Lease</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ color: 'var(--accent-gold)', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>Category</label>
+                <select value={category} onChange={(e) => setCategory(e.target.value)} className="premium-input" style={{ width: '100%', background: 'rgb(30, 30, 30)' }}>
+                  <option>Residential</option>
+                  <option>Commercial</option>
+                  <option>Industrial</option>
+                  <option>Agricultural</option>
+                  <option>Plot</option>
+                </select>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+              <div>
+                <label style={{ color: 'var(--accent-gold)', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>Area (Sqft/Gaj)</label>
+                <input type="number" value={area} onChange={(e) => setArea(e.target.value)} className="premium-input" style={{ width: '100%' }} />
+              </div>
+              <div>
+                <label style={{ color: 'var(--accent-gold)', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>Floors/Details</label>
+                <input type="text" value={floors} onChange={(e) => setFloors(e.target.value)} className="premium-input" style={{ width: '100%' }} />
+              </div>
+            </div>
+
+            {category === 'Residential' && (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                <div>
+                  <label style={{ color: 'var(--accent-gold)', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>Beds</label>
+                  <input type="number" value={beds} onChange={(e) => setBeds(e.target.value)} className="premium-input" style={{ width: '100%' }} />
+                </div>
+                <div>
+                  <label style={{ color: 'var(--accent-gold)', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>Baths</label>
+                  <input type="number" value={baths} onChange={(e) => setBaths(e.target.value)} className="premium-input" style={{ width: '100%' }} />
+                </div>
+              </div>
+            )}
+
             <div>
               <label style={{ color: 'var(--accent-gold)', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>Description</label>
-              <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="premium-input" style={{ width: '100%', minHeight: '100px', resize: 'vertical' }} />
+              <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="premium-input" style={{ width: '100%', minHeight: '80px', resize: 'vertical' }} />
             </div>
 
             <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
               <button onClick={() => setEditingProperty(null)} className="secondary-button" style={{ flex: 1 }}>{t.myProperties.cancel}</button>
               <button
-                onClick={() => handleUpdateProperty(editingProperty.id, { title, price, location, description })}
+                onClick={() => handleUpdateProperty(editingProperty.id, {
+                  title,
+                  price: parseInt(price),
+                  location,
+                  description,
+                  purpose,
+                  category,
+                  area: parseInt(area),
+                  sqft: parseInt(area),
+                  beds: parseInt(beds || 0),
+                  baths: parseInt(baths || 0),
+                  floors
+                })}
                 className="premium-button"
                 style={{ flex: 1 }}
               >

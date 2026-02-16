@@ -893,7 +893,7 @@ _Verified Professional Lead_ 🟢`;
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '30px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         {properties
           .filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.location.toLowerCase().includes(searchQuery.toLowerCase()))
           .sort((a, b) => {
@@ -906,7 +906,16 @@ _Verified Professional Lead_ 🟢`;
             <div
               key={prop.id}
               className="glass animate-fade"
-              style={{ borderRadius: '20px', overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.3s ease' }}
+              style={{
+                borderRadius: '20px',
+                overflow: 'hidden',
+                cursor: 'pointer',
+                transition: 'transform 0.3s ease',
+                display: 'flex',
+                gap: '0',
+                minHeight: '200px',
+                flexDirection: 'row'
+              }}
               onClick={() => {
                 if (user) {
                   setSelectedProperty(prop);
@@ -915,28 +924,29 @@ _Verified Professional Lead_ 🟢`;
                   setView('auth');
                 }
               }}
-              onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-10px)'}
+              onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-5px)'}
               onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
             >
-              <div style={{ height: '240px', overflow: 'hidden', position: 'relative' }}>
+              <div style={{ width: '30%', minWidth: '120px', maxWidth: '300px', overflow: 'hidden', position: 'relative', flexShrink: 0 }}>
                 <img src={prop.image} alt={prop.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                <div style={{ position: 'absolute', top: '15px', right: '15px' }}>
-                  <span className="badge" style={{ background: 'var(--bg-primary)' }}>{prop.type}</span>
+                <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
+                  <span className="badge" style={{ background: 'var(--bg-primary)', fontSize: '0.7rem', padding: '4px 10px' }}>{prop.type || prop.category}</span>
                 </div>
               </div>
-              <div style={{ padding: '24px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}>
-                  <MapPin size={14} /> {prop.location}
+              <div style={{ padding: '20px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '5px' }}>
+                  <MapPin size={12} /> {prop.location}
                 </div>
-                <h3 style={{ fontSize: '1.5rem', marginBottom: '15px' }}>{prop.title}</h3>
-                <div style={{ display: 'flex', gap: '20px', marginBottom: '20px', color: 'var(--text-secondary)' }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}><Bed size={16} /> {prop.beds}</span>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}><Bath size={16} /> {prop.baths}</span>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}><Maximize size={16} /> {prop.sqft}</span>
+                <h3 style={{ fontSize: '1.25rem', marginBottom: '10px', lineBreak: 'anywhere' }}>{prop.title}</h3>
+                <div style={{ display: 'flex', gap: '15px', marginBottom: '15px', color: 'var(--text-secondary)', fontSize: '0.85rem', flexWrap: 'wrap' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Bed size={14} /> {prop.beds}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Bath size={14} /> {prop.baths}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Maximize size={14} /> {prop.sqft || prop.area}</span>
+                  {prop.ownership && <span style={{ color: 'var(--accent-gold)', opacity: 0.8 }}>• {prop.ownership}</span>}
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--glass-border)', paddingTop: '20px' }}>
-                  <span style={{ fontSize: '1.5rem', color: 'var(--accent-gold)', fontWeight: 700 }}>₹{prop.price.toLocaleString()}</span>
-                  <button className="secondary-button" style={{ padding: '8px 20px', fontSize: '0.9rem' }}>{t.buyer.details}</button>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', borderTop: '1px solid var(--glass-border)', paddingTop: '15px' }}>
+                  <span style={{ fontSize: '1.4rem', color: 'var(--accent-gold)', fontWeight: 700 }}>₹{prop.price.toLocaleString()}</span>
+                  <button className="secondary-button" style={{ padding: '6px 15px', fontSize: '0.8rem' }}>{t.buyer.details}</button>
                 </div>
               </div>
             </div>
@@ -1551,42 +1561,54 @@ _Verified Professional Lead_ 🟢`;
             </button>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '30px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             {myProps.map(prop => (
-              <div key={prop.id} className="glass animate-fade" style={{ borderRadius: '20px', overflow: 'hidden' }}>
-                <div style={{ height: '200px', overflow: 'hidden', position: 'relative' }}>
+              <div
+                key={prop.id}
+                className="glass animate-fade"
+                style={{
+                  borderRadius: '20px',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  minHeight: '160px'
+                }}
+              >
+                <div style={{ width: '30%', minWidth: '100px', maxWidth: '250px', overflow: 'hidden', position: 'relative', flexShrink: 0 }}>
                   <img src={prop.image || (prop.media && prop.media[0]?.url)} alt={prop.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  <div style={{ position: 'absolute', top: '15px', right: '15px' }}>
-                    <span className="badge" style={{ background: 'var(--bg-primary)' }}>{prop.category || 'Plot'}</span>
+                  <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
+                    <span className="badge" style={{ background: 'var(--bg-primary)', fontSize: '0.65rem' }}>{prop.category || 'Plot'}</span>
                   </div>
                 </div>
-                <div style={{ padding: '20px' }}>
-                  <h3 style={{ fontSize: '1.25rem', marginBottom: '10px' }}>{prop.title}</h3>
-                  <div style={{ color: 'var(--accent-gold)', fontWeight: 700, fontSize: '1.2rem', marginBottom: '20px' }}>
+                <div style={{ padding: '20px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <h3 style={{ fontSize: '1.15rem', marginBottom: '8px' }}>{prop.title}</h3>
+                  <div style={{ color: 'var(--accent-gold)', fontWeight: 700, fontSize: '1.3rem', marginBottom: '15px' }}>
                     ₹{prop.price?.toLocaleString()}
                   </div>
-                  <div style={{ display: 'flex', gap: '10px' }}>
+                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                     <button
                       onClick={() => {
                         setSelectedProperty(prop);
                         setView('detail');
                       }}
                       className="secondary-button"
-                      style={{ flex: 1, padding: '8px', fontSize: '0.85rem' }}
+                      style={{ padding: '6px 12px', fontSize: '0.8rem' }}
                     >
                       {t.buyer.details}
                     </button>
                     <button
                       onClick={() => setEditingProperty(prop)}
                       className="secondary-button"
-                      style={{ flex: 1, padding: '8px', fontSize: '0.85rem' }}
+                      style={{ padding: '6px 12px', fontSize: '0.8rem' }}
                     >
                       {t.myProperties.edit}
                     </button>
                     <button
-                      onClick={() => handleDeleteProperty(prop.id)}
+                      onClick={() => {
+                        showConfirm(t.alerts.deleteProperty, () => handleDeleteProperty(prop.id));
+                      }}
                       className="secondary-button"
-                      style={{ flex: 1, padding: '8px', fontSize: '0.85rem', color: '#ff4444', borderColor: 'rgba(255,68,68,0.3)' }}
+                      style={{ padding: '6px 12px', fontSize: '0.8rem', color: '#ff4444', borderColor: 'rgba(255,68,68,0.3)' }}
                     >
                       {t.myProperties.delete}
                     </button>

@@ -905,7 +905,7 @@ _Verified Professional Lead_ 🟢`;
           .map(prop => (
             <div
               key={prop.id}
-              className="glass animate-fade"
+              className="glass animate-fade property-card"
               style={{
                 borderRadius: '15px',
                 overflow: 'hidden',
@@ -913,7 +913,7 @@ _Verified Professional Lead_ 🟢`;
                 transition: 'transform 0.3s ease',
                 display: 'flex',
                 gap: '0',
-                minHeight: window.innerWidth < 768 ? '140px' : '200px',
+                minHeight: '180px',
                 flexDirection: 'row'
               }}
               onClick={() => {
@@ -927,25 +927,25 @@ _Verified Professional Lead_ 🟢`;
               onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-5px)'}
               onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
             >
-              <div style={{ width: '35%', minWidth: '100px', maxWidth: '300px', overflow: 'hidden', position: 'relative', flexShrink: 0 }}>
+              <div className="property-card-image" style={{ width: '30%', minWidth: '120px', maxWidth: '280px', overflow: 'hidden', position: 'relative', flexShrink: 0 }}>
                 <img src={prop.image} alt={prop.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 <div style={{ position: 'absolute', top: '8px', right: '8px' }}>
-                  <span className="badge" style={{ background: 'var(--bg-primary)', fontSize: '0.6rem', padding: '3px 8px' }}>{prop.type || prop.category}</span>
+                  <span className="badge" style={{ background: 'var(--bg-primary)' }}>{prop.type || prop.category}</span>
                 </div>
               </div>
-              <div style={{ padding: window.innerWidth < 768 ? '12px' : '20px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', overflow: 'hidden' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--text-secondary)', fontSize: '0.75rem', marginBottom: '3px' }}>
-                  <MapPin size={10} /> {prop.location}
+              <div className="property-card-content" style={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', overflow: 'hidden' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--text-secondary)', fontSize: '0.8rem', marginBottom: '4px' }}>
+                  <MapPin size={12} /> {prop.location}
                 </div>
-                <h3 style={{ fontSize: window.innerWidth < 768 ? '1rem' : '1.25rem', marginBottom: '8px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{prop.title}</h3>
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '10px', color: 'var(--text-secondary)', fontSize: '0.75rem', flexWrap: 'wrap' }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}><Bed size={12} /> {prop.beds}</span>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}><Bath size={12} /> {prop.baths}</span>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}><Maximize size={12} /> {prop.sqft || prop.area}</span>
+                <h3 className="property-card-title" style={{ fontSize: '1.15rem', marginBottom: '8px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{prop.title}</h3>
+                <div className="property-card-details" style={{ display: 'flex', gap: '12px', marginBottom: '10px', color: 'var(--text-secondary)', fontSize: '0.8rem', flexWrap: 'wrap' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}><Bed size={14} /> {prop.beds}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}><Bath size={14} /> {prop.baths}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}><Maximize size={14} /> {prop.sqft || prop.area}</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', borderTop: '1px solid var(--glass-border)', paddingTop: '10px' }}>
-                  <span style={{ fontSize: window.innerWidth < 768 ? '1.1rem' : '1.4rem', color: 'var(--accent-gold)', fontWeight: 700 }}>₹{prop.price.toLocaleString()}</span>
-                  <button className="secondary-button" style={{ padding: '4px 12px', fontSize: '0.75rem' }}>{t.buyer.details}</button>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', borderTop: '1px solid var(--glass-border)', paddingTop: '10px', gap: '10px' }}>
+                  <span className="property-card-price" style={{ fontSize: '1.3rem', color: 'var(--accent-gold)', fontWeight: 700 }}>₹{prop.price.toLocaleString()}</span>
+                  <button className="secondary-button" style={{ padding: '6px 14px', fontSize: '0.8rem', flexShrink: 0 }}>{t.buyer.details}</button>
                 </div>
               </div>
             </div>

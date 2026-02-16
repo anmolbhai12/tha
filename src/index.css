@@ -212,12 +212,26 @@ textarea:focus {
   }
 
   h1 {
-    font-size: 2.5rem !important;
+    font-size: 2rem !important;
+    line-height: 1.2 !important;
+  }
+
+  h2 {
+    font-size: 1.5rem !important;
+  }
+
+  h3 {
+    font-size: 1.1rem !important;
   }
 
   /* Nav responsiveness */
+  nav {
+    padding: 12px 0 !important;
+  }
+
   nav .container {
-    gap: 10px;
+    gap: 8px !important;
+    flex-wrap: nowrap !important;
   }
 
   nav h2 {
@@ -226,13 +240,68 @@ textarea:focus {
 
   nav a,
   nav button {
-    gap: 5px !important;
-    padding: 8px 12px !important;
-    font-size: 0.8rem !important;
+    gap: 4px !important;
+    padding: 6px 10px !important;
+    font-size: 0.75rem !important;
+    white-space: nowrap;
   }
 
   .premium-button {
-    padding: 10px 20px !important;
+    padding: 10px 16px !important;
+    font-size: 0.85rem !important;
+  }
+
+  .secondary-button {
+    padding: 8px 14px !important;
+    font-size: 0.8rem !important;
+  }
+
+  /* Glass cards */
+  .glass {
+    border-radius: 12px !important;
+  }
+
+  /* Input fields */
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+    /* Prevents zoom on iOS */
+    padding: 12px 14px !important;
+  }
+
+  /* Badge */
+  .badge {
+    font-size: 0.65rem !important;
+    padding: 4px 8px !important;
+  }
+
+  /* Property Cards Mobile Optimization */
+  .property-card {
+    min-height: 130px !important;
+  }
+
+  .property-card-image {
+    width: 100px !important;
+    min-width: 100px !important;
+  }
+
+  .property-card-content {
+    padding: 10px !important;
+  }
+
+  .property-card-title {
+    font-size: 0.95rem !important;
+    margin-bottom: 6px !important;
+  }
+
+  .property-card-price {
+    font-size: 1.05rem !important;
+  }
+
+  .property-card-details {
+    font-size: 0.7rem !important;
+    gap: 8px !important;
   }
 }
 

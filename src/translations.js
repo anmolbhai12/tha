@@ -30,6 +30,7 @@ export const translations = {
         buyer: {
             title: 'Curated Selections',
             subtitle: 'Explore active listings in your area',
+            searchPlaceholder: 'Search properties...',
             details: 'Details',
             viewDetails: 'View Details'
         },
@@ -161,6 +162,7 @@ export const translations = {
         buyer: {
             title: 'चुनिंदा संपत्तियाँ',
             subtitle: 'अपने क्षेत्र में सक्रिय लिस्टिंग देखें',
+            searchPlaceholder: 'संपत्ति खोजें...',
             details: 'विवरण',
             viewDetails: 'विवरण देखें'
         },

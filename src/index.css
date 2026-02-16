@@ -213,18 +213,18 @@ textarea:focus {
 
   /* Navigation Mobile Redesign - Professional & Clean */
   nav {
-    padding: 8px 0 !important;
+    padding: 4px 0 !important;
   }
 
   nav .container {
-    gap: 8px !important;
+    gap: 4px !important;
     flex-wrap: nowrap !important;
     justify-content: space-between !important;
   }
 
   /* Compact Logo */
   nav img {
-    height: 35px !important;
+    height: 30px !important;
     width: auto !important;
   }
 
@@ -278,13 +278,25 @@ textarea:focus {
   }
 
   /* Navigation Search Bar - Mobile */
+  .nav-search-container {
+    margin: 0 5px !important;
+    max-width: none !important;
+  }
+
   nav input[type="text"] {
-    font-size: 0.75rem !important;
-    padding: 8px 12px 8px 35px !important;
+    font-size: 0.7rem !important;
+    padding: 6px 10px 6px 30px !important;
+    height: 32px;
   }
 
   nav input[type="text"]+svg {
-    left: 10px !important;
+    left: 8px !important;
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .nav-buttons-container {
+    gap: 5px !important;
   }
 
   h1 {

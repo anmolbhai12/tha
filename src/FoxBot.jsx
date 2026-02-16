@@ -27,32 +27,37 @@ const FoxAvatar = ({ size = 40 }) => {
                     onError={() => setUseFallback(true)}
                 />
             ) : (
-                /* 🦊 Friendly Cartoon Fox Avatar SVG */
+                /* 🦊 Enhanced Masterpiece Fox Avatar SVG */
                 <svg width="100%" height="100%" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="50" fill="#1A1A1A" /> {/* Dark Premium Background */}
                     {/* Ears */}
-                    <path d="M25 35L35 15L45 35H25Z" fill="#ff8c00" />
-                    <path d="M55 35L65 15L75 35H55Z" fill="#ff8c00" />
-                    <path d="M30 35L35 22L40 35H30Z" fill="#111" />
-                    <path d="M60 35L65 22L70 35H60Z" fill="#111" />
+                    <path d="M25 40L35 15L50 45" fill="#D4AF37" /> {/* Gold Accents */}
+                    <path d="M75 40L65 15L50 45" fill="#D4AF37" />
 
-                    {/* Face Base */}
-                    <circle cx="50" cy="55" r="35" fill="#ff8c00" />
+                    {/* Face Shape */}
+                    <path d="M15 50C15 30.67 30.67 15 50 15C69.33 15 85 30.67 85 50C85 69.33 65 90 50 90C35 90 15 69.33 15 50Z" fill="#ff8c00" />
 
-                    {/* White Cheeks */}
-                    <circle cx="35" cy="65" r="15" fill="#fff" />
-                    <circle cx="65" cy="65" r="15" fill="#fff" />
+                    {/* White Fur Detail */}
+                    <path d="M50 90C35 90 15 69.33 15 50C15 45 25 55 50 55C75 55 85 45 85 50C85 69.33 65 90 50 90Z" fill="#FFF" opacity="0.9" />
 
-                    {/* Eyes */}
-                    <circle cx="40" cy="55" r="4" fill="#111" />
-                    <circle cx="60" cy="55" r="4" fill="#111" />
+                    {/* Eyes - Sharp & Clever */}
+                    <circle cx="38" cy="45" r="5" fill="#1A1A1A" />
+                    <circle cx="62" cy="45" r="5" fill="#1A1A1A" />
+                    <circle cx="40" cy="43" r="1.5" fill="#FFF" />
+                    <circle cx="64" cy="43" r="1.5" fill="#FFF" />
 
-                    {/* Nose */}
-                    <circle cx="50" cy="68" r="5" fill="#111" />
-
-                    {/* Little Sparkle */}
-                    <circle cx="42" cy="53" r="1.5" fill="#fff" />
-                    <circle cx="62" cy="53" r="1.5" fill="#fff" />
+                    {/* Nose - Gold Highlight */}
+                    <path d="M50 65C53 65 55 62 55 59C55 56 50 53 50 53C50 53 45 56 45 59C45 62 47 65 50 65Z" fill="#1A1A1A" />
                 </svg>
+            )}
+            {!user && (
+                <div style={{
+                    position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                    background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    backdropFilter: 'blur(2px)', zIndex: 10
+                }}>
+                    <Crown size={size * 0.4} color="#D4AF37" style={{ filter: 'drop-shadow(0 0 5px rgba(212,175,55,0.5))' }} />
+                </div>
             )}
         </div>
     );
@@ -172,9 +177,10 @@ const FoxBot = ({ properties, setView, setSelectedProperty, userName, user }) =>
                         fontSize: '0.75rem', fontWeight: '800', whiteSpace: 'nowrap',
                         boxShadow: '0 5px 15px rgba(0,0,0,0.3)',
                         animation: 'bounce 2s infinite', pointerEvents: 'none',
-                        border: '2px solid #fff'
+                        border: '2px solid #fff', display: 'flex', alignItems: 'center', gap: '8px'
                     }}>
-                        ASK FOXY ANYTHING
+                        {!user && <Crown size={14} color="#fff" />}
+                        {user ? 'ASK FOXY ANYTHING' : 'LOGIN TO UNLOCK FOXY'}
                         <div style={{
                             position: 'absolute', bottom: '-8px', right: '25px',
                             width: '0', height: '0', borderLeft: '8px solid transparent',

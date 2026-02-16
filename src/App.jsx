@@ -642,7 +642,7 @@ _Verified Professional Lead_ 🟢`;
           <img src="/logo-tha-horizontal.svg" alt="Tha Logo" style={{ height: '70px', width: 'auto' }} />
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flex: 1, maxWidth: '600px', marginLeft: '20px', marginRight: '20px' }}>
+        <div className="nav-search-container" style={{ display: 'flex', alignItems: 'center', gap: '20px', flex: 1, maxWidth: '600px', marginLeft: '20px', marginRight: '20px' }}>
           {/* Global Search Bar - Now truly global */}
           <div style={{ flex: 1, position: 'relative' }}>
             <Search size={18} style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
@@ -652,10 +652,7 @@ _Verified Professional Lead_ 🟢`;
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
-                if (view !== 'buyer') setView('buyer');
-              }}
-              onFocus={() => {
-                if (view !== 'buyer') setView('buyer');
+                if (e.target.value && view !== 'buyer') setView('buyer');
               }}
               style={{
                 width: '100%',
@@ -670,7 +667,7 @@ _Verified Professional Lead_ 🟢`;
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+        <div className="nav-buttons-container" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           <button onClick={() => user ? setView('seller') : setView('auth')} className="premium-button">
             <Plus size={18} /> {t.nav.postProperty}
           </button>
@@ -864,21 +861,18 @@ _Verified Professional Lead_ 🟢`;
         }
         <div className="hero-section" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', background: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url("https://images.unsplash.com/photo-1600585154340-be6199f7a096?auto=format&fit=crop&w=1920&q=80")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
           <div className="container hero-content">
-            {/* User requested THIS should not come when search bar is up */}
-            {!isSearchExpanded && (
-              <div className="animate-fade">
-                <span className="badge">{t.hero.badge}</span>
-                <h1 style={{ fontSize: 'clamp(3rem, 8vw, 5rem)', marginBottom: '1.5rem', maxWidth: '900px', lineHeight: 1.1, color: '#fff' }}>
-                  {t.hero.title.split('Masterpiece')[0]}<span className="text-gradient-gold">Masterpiece</span>{t.hero.title.split('Masterpiece')[1]}
-                </h1>
-                <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', maxWidth: '600px', marginBottom: '3rem' }}>
-                  {t.hero.subtitle}
-                </p>
-                <button onClick={() => setView('buyer')} className="premium-button" style={{ padding: '18px 40px', fontSize: '1.2rem', marginTop: '1rem' }}>
-                  {t.hero.findHomes} <ArrowRight size={20} style={{ marginLeft: '10px' }} />
-                </button>
-              </div>
-            )}
+            <div className="animate-fade">
+              <span className="badge">{t.hero.badge}</span>
+              <h1 style={{ fontSize: 'clamp(3rem, 8vw, 5rem)', marginBottom: '1.5rem', maxWidth: '900px', lineHeight: 1.1, color: '#fff' }}>
+                {t.hero.title.split('Masterpiece')[0]}<span className="text-gradient-gold">Masterpiece</span>{t.hero.title.split('Masterpiece')[1]}
+              </h1>
+              <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', maxWidth: '600px', marginBottom: '3rem' }}>
+                {t.hero.subtitle}
+              </p>
+              <button onClick={() => setView('buyer')} className="premium-button" style={{ padding: '18px 40px', fontSize: '1.2rem', marginTop: '1rem' }}>
+                {t.hero.findHomes} <ArrowRight size={20} style={{ marginLeft: '10px' }} />
+              </button>
+            </div>
           </div>
         </div>
       </React.Fragment >

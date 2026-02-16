@@ -64,7 +64,7 @@ const FoxBot = ({ properties, setView, setSelectedProperty, userName, user }) =>
         {
             id: 1,
             type: 'bot',
-            text: `Hi! I am Fox Scout. 🦊 I'm a clever assistant here to help you track down the best property masterpieces. What's on your mind?`
+            text: `Hi! I am Foxy. 🦊 I'm a clever assistant here to help you track down the best property masterpieces. What's on your mind?`
         }
     ]);
     const [input, setInput] = useState('');
@@ -138,7 +138,7 @@ const FoxBot = ({ properties, setView, setSelectedProperty, userName, user }) =>
                 responseText = `I've looked everywhere, but I couldn't find a match for "${query}" yet. Try searching for something else!`;
             }
         } else if (q.includes('hello') || q.includes('hi') || q.includes('who are you')) {
-            responseText = `I am Fox Scout! 🦊 Your clever real estate tracker. I help you find properties that fit your legend. Just tell me what location or type you're looking for!`;
+            responseText = `I am Foxy! 🦊 Your clever real estate tracker. I help you find properties that fit your legend. Just tell me what location or type you're looking for!`;
         } else {
             responseText = `I am currently searching our database for "${query}". Here are the top results from our elite collection:`;
             relevantProperties = properties.slice(0, 2);
@@ -217,10 +217,10 @@ const FoxBot = ({ properties, setView, setSelectedProperty, userName, user }) =>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                             <FoxAvatar size={45} />
                             <div>
-                                <h4 style={{ color: '#ff8c00', fontSize: '1.1rem', margin: 0 }}>Fox Scout</h4>
+                                <h4 style={{ color: '#ff8c00', fontSize: '1.1rem', margin: 0 }}>Foxy</h4>
                                 <span style={{ fontSize: '0.7rem', color: '#22c55e', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                     <div style={{ width: '6px', height: '6px', background: '#22c55e', borderRadius: '50%' }}></div>
-                                    {user ? 'The Fox is online' : '🔒 Login to track properties'}
+                                    {user ? 'Foxy is online' : '🔒 Login to chat with Foxy'}
                                 </span>
                             </div>
                         </div>
@@ -280,7 +280,7 @@ const FoxBot = ({ properties, setView, setSelectedProperty, userName, user }) =>
                             borderRadius: '100px', padding: '5px 5px 5px 20px', border: '1px solid rgba(255,255,255,0.1)'
                         }}>
                             <input
-                                placeholder="Track down properties with Fox Scout..."
+                                placeholder="Track down properties with Foxy..."
                                 style={{ flex: 1, background: 'transparent', border: 'none', padding: 0, fontSize: '0.9rem', color: '#fff' }}
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}

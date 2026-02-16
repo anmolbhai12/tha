@@ -211,26 +211,37 @@ textarea:focus {
   padding-left: 15px !important;
 }
 
-/* Tablet Optimizations (Under 1024px) */
-@media (max-width: 1024px) {
+/* Tablet Optimizations (Under 992px) */
+/* Kept minimal to preserve desktop layout as much as possible */
+@media (max-width: 992px) {
+
+  /* Only stack if really necessary, otherwise keep list view */
+  .property-card-image-box {
+    width: 280px;
+    min-width: 280px;
+  }
+}
+
+/* Mobile Optimizations (Under 768px) */
+@media (max-width: 768px) {
+
+  /* Restore stacking for mobile only */
   .property-detail-grid {
     grid-template-columns: 1fr !important;
     gap: 30px;
   }
 
   .property-card-container {
-    flex-direction: column;
+    flex-direction: column !important;
   }
 
   .property-card-image-box {
-    width: 100%;
-    min-width: 100%;
-    height: 300px;
+    width: 100% !important;
+    min-width: 100% !important;
+    height: 250px !important;
   }
-}
 
-/* Mobile Optimizations (Under 768px) */
-@media (max-width: 768px) {
+  /* Nav adjustments ... */
   .container {
     padding: 0 1rem !important;
   }

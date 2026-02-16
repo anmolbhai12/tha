@@ -128,7 +128,7 @@ const Nav = ({
 
       <div className="nav-buttons-container" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
         <button onClick={() => user ? setView('seller') : setView('auth')} className="premium-button">
-          <Plus size={18} /> <span className="mobile-hide-text">{t.nav.postProperty}</span>
+          <Plus size={18} /> <span className={window.innerWidth < 600 ? 'mobile-hide-text' : ''}>{t.nav.postProperty}</span>
         </button>
 
         <div style={{ position: 'relative' }}>

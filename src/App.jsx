@@ -85,7 +85,15 @@ const Nav = ({
 
         {/* Quick Filters - Always visible in Buyer view or when searching */}
         {(isSearchActive || searchQuery || view === 'buyer') && (
-          <div className="animate-fade filter-scroll-container">
+          <div className="animate-fade" style={{
+            display: 'flex',
+            gap: '8px',
+            overflowX: 'auto',
+            paddingBottom: '5px',
+            width: '100%',
+            whiteSpace: 'nowrap',
+            webkitOverflowScrolling: 'touch'
+          }}>
             <select
               className="glass"
               style={{ padding: '6px 12px', borderRadius: '20px', color: 'white', border: '1px solid var(--accent-gold)', fontSize: '0.75rem', background: 'rgba(212,175,55,0.05)' }}
@@ -337,10 +345,82 @@ const LandingView = ({ t, setView, setIsSearchActive }) => (
   </React.Fragment >
 );
 
+// Mobile Property Card Component - Dedicated Layout
+const MobilePropertyCard = ({ p, onClick }) => (
+  <div
+    onClick={onClick}
+    className="glass animate-fade"
+    style={{
+      display: 'flex',
+      flexDirection: 'row',
+      height: '110px',
+      marginBottom: '10px',
+      borderRadius: '15px',
+      overflow: 'hidden',
+      cursor: 'pointer',
+      border: '1px solid rgba(255,255,255,0.05)',
+      position: 'relative'
+    }}
+  >
+    {/* Fixed Width Image - 35% */}
+    <div style={{ width: '35%', minWidth: '110px', position: 'relative' }}>
+      <img
+        src={p.image}
+        alt={p.title}
+        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+      />
+      <div style={{
+        position: 'absolute', top: '5px', left: '5px',
+        background: 'var(--accent-gold)', color: '#000',
+        padding: '2px 8px', borderRadius: '10px',
+        fontWeight: 'bold', fontSize: '0.6rem'
+      }}>
+        {p.category}
+      </div>
+    </div>
+
+    {/* Content Side - 65% */}
+    <div style={{ flex: 1, padding: '10px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+      <h3 style={{
+        fontSize: '0.95rem',
+        marginBottom: '4px',
+        fontFamily: 'Playfair Display',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap'
+      }}>
+        {p.title}
+      </h3>
+
+      <div style={{ color: 'var(--accent-gold)', fontWeight: 'bold', fontSize: '1rem', marginBottom: '4px' }}>
+        ₹{p.price >= 10000000 ? `${(p.price / 10000000).toFixed(2)} Cr` : p.price.toLocaleString('en-IN')}
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--text-secondary)', fontSize: '0.75rem' }}>
+        <MapPin size={12} color="var(--accent-gold)" />
+        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.location}</span>
+      </div>
+
+      <div style={{ display: 'flex', gap: '10px', marginTop: '6px', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+        <span>{p.beds} Beds</span>
+        <span>{p.sqft || p.area} sqft</span>
+      </div>
+    </div>
+  </div>
+);
+
 // Buyer View Component
 const BuyerView = ({
   t, properties, searchQuery, filterType, filterArea, filterBudget, sortBy, setSortBy, setView, setSelectedProperty, user, language
 }) => {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const filteredProperties = properties.filter(p => {
     const matchesSearch = searchQuery === '' ||
       p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -418,85 +498,100 @@ const BuyerView = ({
           </div>
         ) : (
           filteredProperties.map((p, index) => (
-            <div
-              key={p.id}
-              className="glass animate-fade property-card-container"
-              style={{
-                animationDelay: `${index * 0.1}s`,
-                cursor: 'pointer',
-                borderRadius: '25px',
-                overflow: 'hidden',
-                display: 'flex',
-                border: '1px solid rgba(255,255,255,0.05)',
-                transition: 'transform 0.3s ease, border-color 0.3s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = 'var(--accent-gold)';
-                e.currentTarget.style.transform = 'translateY(-5px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-              onClick={() => {
-                if (user) {
-                  setSelectedProperty(p);
-                  setView('detail');
-                } else {
-                  setView('auth');
-                }
-              }}
-            >
-              <div className="property-card-image-box">
-                <img
-                  src={p.image}
-                  alt={p.title}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-                <div style={{
-                  position: 'absolute', top: '15px', right: '15px',
-                  background: 'var(--accent-gold)', color: '#000',
-                  padding: '5px 15px', borderRadius: '20px',
-                  fontWeight: 'bold', fontSize: '0.8rem',
-                  boxShadow: '0 4px 10px rgba(0,0,0,0.3)'
-                }}>
-                  {p.category}
+            isMobile ? (
+              <MobilePropertyCard
+                key={p.id}
+                p={p}
+                onClick={() => {
+                  if (user) {
+                    setSelectedProperty(p);
+                    setView('detail');
+                  } else {
+                    setView('auth');
+                  }
+                }}
+              />
+            ) : (
+              <div
+                key={p.id}
+                className="glass animate-fade property-card-container"
+                style={{
+                  animationDelay: `${index * 0.1}s`,
+                  cursor: 'pointer',
+                  borderRadius: '25px',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  border: '1px solid rgba(255,255,255,0.05)',
+                  transition: 'transform 0.3s ease, border-color 0.3s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--accent-gold)';
+                  e.currentTarget.style.transform = 'translateY(-5px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+                onClick={() => {
+                  if (user) {
+                    setSelectedProperty(p);
+                    setView('detail');
+                  } else {
+                    setView('auth');
+                  }
+                }}
+              >
+                <div className="property-card-image-box">
+                  <img
+                    src={p.image}
+                    alt={p.title}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                  <div style={{
+                    position: 'absolute', top: '15px', right: '15px',
+                    background: 'var(--accent-gold)', color: '#000',
+                    padding: '5px 15px', borderRadius: '20px',
+                    fontWeight: 'bold', fontSize: '0.8rem',
+                    boxShadow: '0 4px 10px rgba(0,0,0,0.3)'
+                  }}>
+                    {p.category}
+                  </div>
+                </div>
+
+                <div style={{ padding: '30px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
+                    <div style={{ color: 'var(--accent-gold)', fontWeight: 'bold', fontSize: '1.8rem' }}>
+                      ₹{p.price.toLocaleString('en-IN')}
+                    </div>
+                  </div>
+
+                  <h3 style={{ fontSize: '1.6rem', marginBottom: '12px', fontFamily: 'Playfair Display' }}>{p.title}</h3>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontSize: '1rem', marginBottom: '25px' }}>
+                    <MapPin size={18} color="var(--accent-gold)" /> {p.location}
+                  </div>
+
+                  <div style={{
+                    display: 'flex', gap: '25px', color: 'var(--text-secondary)',
+                    borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px',
+                    marginTop: 'auto'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Bed size={20} color="var(--accent-gold)" />
+                      <span>{p.beds} Beds</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Bath size={20} color="var(--accent-gold)" />
+                      <span>{p.baths} Baths</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Maximize size={20} color="var(--accent-gold)" />
+                      <span>{p.sqft || p.area} sqft</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-
-              <div style={{ padding: '30px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
-                  <div style={{ color: 'var(--accent-gold)', fontWeight: 'bold', fontSize: '1.8rem' }}>
-                    ₹{p.price.toLocaleString('en-IN')}
-                  </div>
-                </div>
-
-                <h3 style={{ fontSize: '1.6rem', marginBottom: '12px', fontFamily: 'Playfair Display' }}>{p.title}</h3>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontSize: '1rem', marginBottom: '25px' }}>
-                  <MapPin size={18} color="var(--accent-gold)" /> {p.location}
-                </div>
-
-                <div style={{
-                  display: 'flex', gap: '25px', color: 'var(--text-secondary)',
-                  borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px',
-                  marginTop: 'auto'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Bed size={20} color="var(--accent-gold)" />
-                    <span>{p.beds} Beds</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Bath size={20} color="var(--accent-gold)" />
-                    <span>{p.baths} Baths</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Maximize size={20} color="var(--accent-gold)" />
-                    <span>{p.sqft || p.area} sqft</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            )
           ))
         )}
       </div>
@@ -2259,7 +2354,7 @@ _Verified Professional Lead_ 🟢`;
               </span>
             </div>
             <p style={{ marginTop: '30px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-              {t.footer.rights} <span>v5.3 (Final Fix - Round 7)</span>
+              {t.footer.rights} <span>v5.4 (Mobile Component)</span>
             </p>
           </div>
         </footer>

@@ -123,6 +123,7 @@ function App() {
   const [isEditingName, setIsEditingName] = useState(false);
   const [tempName, setTempName] = useState('');
   const [isChoosingLanguage, setIsChoosingLanguage] = useState(false);
+  const [editingProperty, setEditingProperty] = useState(null);
 
   // Sync state with user object (Fixes 400 error on refresh)
   useEffect(() => {
@@ -607,6 +608,27 @@ _Verified Professional Lead_ 🟢`;
         showAlert("Error deleting property.");
       }
     });
+  };
+
+  const handleUpdateProperty = async (id, data) => {
+    try {
+      const res = await fetch(`https://dalaalstreetss.alwaysdata.net/properties/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setProperties(prev => prev.map(p => p.id === id ? updated : p));
+        setEditingProperty(null);
+        showAlert(language === 'en' ? "Property updated successfully!" : "संपत्ति सफलतापूर्वक अपडेट हो गई!");
+      } else {
+        showAlert("Failed to update property.");
+      }
+    } catch (err) {
+      console.error(err);
+      showAlert("Error updating property.");
+    }
   };
 
   const Nav = () => (
@@ -1637,6 +1659,13 @@ _Verified Professional Lead_ 🟢`;
                       {t.buyer.details}
                     </button>
                     <button
+                      onClick={() => setEditingProperty(prop)}
+                      className="secondary-button"
+                      style={{ flex: 1, padding: '8px', fontSize: '0.85rem' }}
+                    >
+                      {t.myProperties.edit}
+                    </button>
+                    <button
                       onClick={() => handleDeleteProperty(prop.id)}
                       className="secondary-button"
                       style={{ flex: 1, padding: '8px', fontSize: '0.85rem', color: '#ff4444', borderColor: 'rgba(255,68,68,0.3)' }}
@@ -1653,9 +1682,56 @@ _Verified Professional Lead_ 🟢`;
     );
   };
 
+  const EditPropertyModal = () => {
+    if (!editingProperty) return null;
+    const [price, setPrice] = useState(editingProperty.price);
+    const [location, setLocation] = useState(editingProperty.location);
+    const [title, setTitle] = useState(editingProperty.title || `${editingProperty.category} in ${editingProperty.location}`);
+    const [description, setDescription] = useState(editingProperty.description);
+
+    return (
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 2000, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+        <div className="glass" style={{ padding: '40px', borderRadius: '30px', width: '100%', maxWidth: '500px', border: '1px solid var(--accent-gold)' }}>
+          <h2 style={{ color: 'var(--accent-gold)', marginBottom: '25px', textAlign: 'center' }}>{language === 'en' ? 'Edit Property' : 'संपत्ति संपादित करें'}</h2>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div>
+              <label style={{ color: 'var(--accent-gold)', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>Title</label>
+              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="premium-input" style={{ width: '100%' }} />
+            </div>
+            <div>
+              <label style={{ color: 'var(--accent-gold)', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>Price (₹)</label>
+              <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} className="premium-input" style={{ width: '100%' }} />
+            </div>
+            <div>
+              <label style={{ color: 'var(--accent-gold)', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>Location</label>
+              <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} className="premium-input" style={{ width: '100%' }} />
+            </div>
+            <div>
+              <label style={{ color: 'var(--accent-gold)', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>Description</label>
+              <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="premium-input" style={{ width: '100%', minHeight: '100px', resize: 'vertical' }} />
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+              <button onClick={() => setEditingProperty(null)} className="secondary-button" style={{ flex: 1 }}>{t.myProperties.cancel}</button>
+              <button
+                onClick={() => handleUpdateProperty(editingProperty.id, { title, price, location, description })}
+                className="premium-button"
+                style={{ flex: 1 }}
+              >
+                {t.myProperties.saveChanges}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="App">
       <CustomModal />
+      <EditPropertyModal />
       <Nav />
 
       {view === 'landing' && <LandingView />}

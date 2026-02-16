@@ -21,11 +21,13 @@ import {
   LogOut,
   ArrowLeft,
   Check,
-  Play
+  Play,
+  Phone
 } from 'lucide-react';
 import { translations } from './translations';
 import { gsap } from 'gsap';
 import FoxBot from './FoxBot.jsx';
+import Peer from 'peerjs';
 
 // Mock Data
 const INITIAL_PROPERTIES = [];
@@ -129,6 +131,19 @@ function App() {
       if (!phoneNumber && user.phone) setPhoneNumber(user.phone);
     }
   }, [user]);
+
+  // Voice Call Signal Handling
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const callView = urlParams.get('view');
+    const callId = urlParams.get('id');
+    const role = urlParams.get('role');
+
+    if (callView === 'call' && callId) {
+      setView('call');
+      setSelectedProperty({ id: callId.split('-')[1], title: 'Secure Voice Call' });
+    }
+  }, []);
 
   // GAS URLs & Bot Proxies
   const WHATSAPP_PROXY_URL = 'https://dalaalstreetss.alwaysdata.net/send-otp';
@@ -575,6 +590,25 @@ _Verified Professional Lead_ 🟢`;
     showAlert(language === 'en' ? "Name updated successfully!" : "नाम सफलतापूर्वक अपडेट हो गया!");
   };
 
+  const handleDeleteProperty = (id) => {
+    showConfirm(t.alerts.deleteProperty, async () => {
+      try {
+        const res = await fetch(`https://dalaalstreetss.alwaysdata.net/properties/${id}`, {
+          method: 'DELETE'
+        });
+        if (res.ok) {
+          setProperties(prev => prev.filter(p => p.id !== id));
+          showAlert(language === 'en' ? "Property deleted successfully!" : "संपत्ति सफलतापूर्वक हटा दी गई!");
+        } else {
+          showAlert("Failed to delete property.");
+        }
+      } catch (err) {
+        console.error(err);
+        showAlert("Error deleting property.");
+      }
+    });
+  };
+
   const Nav = () => (
     <nav className="glass" style={{ position: 'fixed', top: 0, width: '100%', zIndex: 1000, padding: '1rem 0' }}>
       <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -669,6 +703,18 @@ _Verified Professional Lead_ 🟢`;
                       className="menu-item-hover"
                     >
                       <User size={16} /> {language === 'en' ? 'Edit Name' : 'नाम बदलें'}
+                    </button>
+
+                    {/* My Properties Option */}
+                    <button
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        setView('my-properties');
+                      }}
+                      style={{ width: '100%', textAlign: 'left', padding: '10px', borderRadius: '10px', background: 'transparent', color: '#fff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginTop: '5px' }}
+                      className="menu-item-hover"
+                    >
+                      <HomeIcon size={16} /> {t.nav.myProperties}
                     </button>
 
                     {/* Language Selection Trigger */}
@@ -1172,30 +1218,110 @@ _Verified Professional Lead_ 🟢`;
           <X size={18} /> {t.detail.back}
         </button>
 
-        <div className="glass" style={{ padding: '30px', borderRadius: '30px', position: 'sticky', top: '120px' }}>
-          <p style={{ color: 'var(--text-secondary)', marginBottom: '5px' }}>{t.detail.price}</p>
-          <h2 style={{ fontSize: '3rem', color: 'var(--accent-gold)', marginBottom: '2rem' }}>₹{selectedProperty.price.toLocaleString()}</h2>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '2rem', padding: '15px', background: 'rgba(255,255,255,0.05)', borderRadius: '15px' }}>
-            <div style={{ width: '50px', height: '50px', background: 'var(--accent-gold)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 700, color: 'var(--bg-primary)' }}>
-              {selectedProperty.seller.charAt(0)}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '40px', alignItems: 'start' }}>
+          {/* Left Side: Media & Description */}
+          <div>
+            <div style={{ borderRadius: '30px', overflow: 'hidden', background: '#000', height: '500px', marginBottom: '20px', position: 'relative', border: '1px solid var(--glass-border)' }}>
+              {currentMedia.type === 'video' ? (
+                <video src={currentMedia.url} controls autoPlay muted playsInline style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              ) : (
+                <img src={currentMedia.url} alt="property" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              )}
             </div>
-            <div>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{t.detail.listedBy}</p>
-              <h4 style={{ fontSize: '1.1rem' }}>{selectedProperty.seller}</h4>
+
+            {mediaList.length > 1 && (
+              <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', marginBottom: '30px', paddingBottom: '10px' }}>
+                {mediaList.map((m, i) => (
+                  <div
+                    key={i}
+                    onClick={() => setSelectedMediaIndex(i)}
+                    style={{
+                      flex: '0 0 80px', height: '80px', borderRadius: '10px', overflow: 'hidden', cursor: 'pointer',
+                      border: selectedMediaIndex === i ? '2px solid var(--accent-gold)' : '2px solid transparent',
+                      opacity: selectedMediaIndex === i ? 1 : 0.6
+                    }}
+                  >
+                    {m.type === 'video' ? (
+                      <div style={{ width: '100%', height: '100%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Play size={20} color="#fff" /></div>
+                    ) : (
+                      <img src={m.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="glass" style={{ padding: '30px', borderRadius: '30px' }}>
+              <h2 style={{ fontSize: '2rem', marginBottom: '20px', fontFamily: 'Playfair Display' }}>{selectedProperty.title}</h2>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', marginBottom: '30px' }}>
+                <MapPin size={18} color="var(--accent-gold)" /> {selectedProperty.location}
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '40px', padding: '20px 0', borderTop: '1px solid var(--glass-border)', borderBottom: '1px solid var(--glass-border)' }}>
+                <div style={{ textAlign: 'center' }}>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '5px' }}>Beds</p>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                    <Bed size={18} color="var(--accent-gold)" /> <span style={{ fontWeight: '600' }}>{selectedProperty.beds}</span>
+                  </div>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '5px' }}>Baths</p>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                    <Bath size={18} color="var(--accent-gold)" /> <span style={{ fontWeight: '600' }}>{selectedProperty.baths}</span>
+                  </div>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '5px' }}>Area</p>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                    <Maximize size={18} color="var(--accent-gold)" /> <span style={{ fontWeight: '600' }}>{selectedProperty.area}</span>
+                  </div>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '5px' }}>Floors</p>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                    <HomeIcon size={18} color="var(--accent-gold)" /> <span style={{ fontWeight: '600' }}>{selectedProperty.floors || 'N/A'}</span>
+                  </div>
+                </div>
+              </div>
+
+              <h4 style={{ color: 'var(--accent-gold)', marginBottom: '15px' }}>Description</h4>
+              <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6, whiteSpace: 'pre-line' }}>
+                {selectedProperty.description}
+              </p>
             </div>
           </div>
 
-          <button onClick={() => setIsChatOpen(true)} className="premium-button" style={{ width: '100%', justifyContent: 'center', marginBottom: '15px' }}>
-            <MessageSquare size={18} /> Chat on WhatsApp
-          </button>
-          <button className="secondary-button" style={{ width: '100%', justifyContent: 'center' }}>
-            {t.detail.save}
-          </button>
+          {/* Right Side: Price & Chat (Sticky) */}
+          <div className="glass" style={{ padding: '30px', borderRadius: '30px', position: 'sticky', top: '120px', border: '1px solid var(--accent-gold)' }}>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '5px' }}>Listing Price</p>
+            <h2 style={{ fontSize: '3rem', color: 'var(--accent-gold)', marginBottom: '2rem', fontFamily: 'Playfair Display' }}>₹{selectedProperty.price.toLocaleString()}</h2>
 
-          <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '20px' }}>
-            {t.detail.verified}
-          </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '2rem', padding: '15px', background: 'rgba(255,255,215,0.05)', borderRadius: '15px', border: '1px solid rgba(212,175,55,0.2)' }}>
+              <div style={{ width: '50px', height: '50px', background: 'var(--accent-gold)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 700, color: 'var(--bg-primary)' }}>
+                {selectedProperty.seller.charAt(0)}
+              </div>
+              <div>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Status: Verified</p>
+                <h4 style={{ fontSize: '1.1rem' }}>{selectedProperty.seller}</h4>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setIsChatOpen(true)}
+              className="premium-button"
+              style={{ width: '100%', justifyContent: 'center', marginBottom: '15px', padding: '15px' }}
+            >
+              <MessageSquare size={18} /> Chat on WhatsApp
+            </button>
+
+            <button className="glass" style={{ width: '100%', padding: '12px', borderRadius: '10px', color: 'var(--text-secondary)', cursor: 'pointer', border: '1px solid var(--glass-border)' }}>
+              Save to Favorites
+            </button>
+
+            <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '20px' }}>
+              Secure & Private Communication via Tha Bot 🔒
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -1209,69 +1335,323 @@ _Verified Professional Lead_ 🟢`;
       left: '50%',
       transform: 'translate(-50%, -50%)',
       width: '90%',
-      maxWidth: '400px',
-      borderRadius: '25px',
+      maxWidth: '430px',
+      borderRadius: '30px',
       zIndex: 1001,
       display: 'flex',
       flexDirection: 'column',
       overflow: 'hidden',
-      boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
-      background: 'rgba(20, 20, 20, 0.95)',
-      border: '1px solid var(--accent-gold)'
+      boxShadow: '0 20px 80px rgba(0,0,0,0.8)',
+      background: 'rgba(10, 10, 10, 0.98)',
+      border: '1px solid var(--accent-gold)',
+      backdropFilter: 'blur(20px)'
     }}>
-      <div style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--glass-border)' }}>
-        <h3 style={{ margin: 0 }}>Contact Seller</h3>
+      <div style={{ padding: '25px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(212,175,55,0.2)' }}>
+        <h3 style={{ margin: 0, fontFamily: 'Playfair Display', color: 'var(--accent-gold)' }}>Connect Privately</h3>
         <button onClick={() => setIsChatOpen(false)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}>
           <X size={24} />
         </button>
       </div>
 
-      <div style={{ padding: '30px', textAlign: 'center' }}>
-        <div style={{
-          width: '80px', height: '80px',
-          background: 'var(--accent-gold)',
-          borderRadius: '50%',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: '2rem', fontWeight: 700,
-          color: 'var(--bg-primary)',
-          margin: '0 auto 20px'
-        }}>
-          {selectedProperty.seller.charAt(0)}
+      <div style={{ padding: '40px', textAlign: 'center' }}>
+        <div style={{ position: 'relative', width: '90px', height: '90px', margin: '0 auto 25px' }}>
+          <div style={{
+            width: '100%', height: '100%',
+            background: 'linear-gradient(135deg, var(--accent-gold), #b38b2d)',
+            borderRadius: '25px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '2.2rem', fontWeight: 800,
+            color: 'var(--bg-primary)',
+            boxShadow: '0 10px 20px rgba(212,175,55,0.3)'
+          }}>
+            {selectedProperty.seller.charAt(0)}
+          </div>
+          <div style={{
+            position: 'absolute', bottom: '-5px', right: '-5px',
+            background: '#25D366', width: '28px', height: '28px',
+            borderRadius: '50%', border: '4px solid #000',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <Check size={14} color="white" strokeWidth={3} />
+          </div>
         </div>
-        <h2 style={{ marginBottom: '10px' }}>{selectedProperty.seller}</h2>
-        <p style={{ color: 'var(--text-secondary)', marginBottom: '30px' }}>
-          Verified Professional Seller
+
+        <h2 style={{ marginBottom: '8px', fontSize: '1.8rem' }}>{selectedProperty.seller}</h2>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginBottom: '35px' }}>
+          {language === 'en' ? 'Verified Professional' : 'सत्यापित पेशेवर'}
         </p>
 
-        {selectedProperty.mobile ? (
-          <>
-            <div style={{
-              background: 'rgba(255,255,255,0.05)',
-              padding: '15px',
-              borderRadius: '15px',
-              marginBottom: '20px',
-              border: '1px dashed var(--text-secondary)'
-            }}>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '5px' }}>Mobile Number</p>
-              <h3 style={{ fontSize: '1.5rem', letterSpacing: '1px' }}>{selectedProperty.mobile}</h3>
-            </div>
+        <div style={{
+          background: 'rgba(212,175,55,0.05)',
+          padding: '20px',
+          borderRadius: '20px',
+          marginBottom: '30px',
+          border: '1px dashed rgba(212,175,55,0.3)',
+          textAlign: 'left'
+        }}>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '8px' }}>Privacy Shield Active 🛡️</p>
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+            {language === 'en'
+              ? "Your phone number is hidden. You will chat via the central Tha Bot number to protect your privacy."
+              : "आपका फ़ोन नंबर छिपा हुआ है। आपकी गोपनीयता बनाए रखने के लिए आप केंद्रीय 'Tha Bot' नंबर द्वारा चैट करेंगे।"}
+          </p>
+        </div>
 
-            <button
-              onClick={() => window.open(`https://wa.me/${selectedProperty.mobile.replace(/\D/g, '')}`, '_blank')}
-              className="premium-button"
-              style={{ width: '100%', justifyContent: 'center', background: '#25D366', border: 'none' }}
-            >
-              <MessageSquare size={20} /> Chat on WhatsApp
-            </button>
-          </>
-        ) : (
-          <div style={{ padding: '20px', background: 'rgba(255,100,100,0.1)', borderRadius: '15px' }}>
-            <p style={{ color: '#ff6b6b' }}>Contact details not available for this legacy listing.</p>
-          </div>
-        )}
+        <button
+          onClick={() => {
+            const botNumber = "919186090113";
+            const msg = `Hi Tha, I'm interested in viewing Property #${selectedProperty.id}: ${selectedProperty.title} (${selectedProperty.location}). Can you help me connect?`;
+            window.open(`https://wa.me/${botNumber}?text=${encodeURIComponent(msg)}`, '_blank');
+          }}
+          className="premium-button"
+          style={{ width: '100%', justifyContent: 'center', background: '#25D366', color: '#fff', border: 'none', padding: '18px', fontSize: '1.1rem' }}
+        >
+          <MessageSquare size={22} style={{ marginRight: '10px' }} />
+          {language === 'en' ? 'Chat via Tha Bot' : 'Tha Bot द्वारा चैट करें'}
+        </button>
+
+        <p style={{ marginTop: '20px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+          Both parties chat via <b>+91 9186090113</b>
+        </p>
+
+        <div style={{ marginTop: '20px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px' }}>
+          <button
+            onClick={async () => {
+              if (!user) {
+                showAlert("Please login to use secure calling.");
+                return;
+              }
+              try {
+                const res = await fetch('/initiate-call', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    buyerPhone: user.phone,
+                    sellerPhone: selectedProperty.mobile,
+                    propertyId: selectedProperty.id,
+                    propertyTitle: selectedProperty.title
+                  })
+                });
+                const data = await res.json();
+                if (data.success) {
+                  window.location.href = `/?view=call&id=${data.callId}&role=initiator`;
+                } else {
+                  showAlert(data.error || "Call rejected by server.");
+                }
+              } catch (e) {
+                showAlert("Network Error: Could not connect to call server.");
+              }
+            }}
+            className="premium-button"
+            style={{
+              width: '100%',
+              justifyContent: 'center',
+              background: 'rgba(212,175,55,0.1)',
+              border: '2px solid var(--accent-gold)',
+              color: 'var(--accent-gold)',
+              padding: '18px',
+              fontSize: '1.1rem',
+              fontWeight: 'bold',
+              boxShadow: '0 0 15px rgba(212,175,55,0.2)'
+            }}
+          >
+            <Phone size={22} style={{ marginRight: '10px' }} />
+            {language === 'en' ? 'Secure Voice Call' : 'सुरक्षित वॉयस कॉल'}
+          </button>
+        </div>
       </div>
     </div>
   );
+
+  const CallInterface = () => {
+    const [callStatus, setCallStatus] = useState('connecting'); // connecting, ringing, connected, ended
+    const [isMuted, setIsMuted] = useState(false);
+    const peerRef = useRef(null);
+    const remoteAudioRef = useRef(new Audio());
+    const localStreamRef = useRef(null);
+    const urlParams = new URLSearchParams(window.location.search);
+    const callId = urlParams.get('id');
+    const role = urlParams.get('role');
+
+    useEffect(() => {
+      if (!callId) return;
+
+      const peer = new Peer(role === 'initiator' ? `${callId}-buyer` : `${callId}-seller`, {
+        debug: 2
+      });
+      peerRef.current = peer;
+
+      peer.on('open', async (id) => {
+        console.log('✅ Peer ID:', id);
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          localStreamRef.current = stream;
+
+          if (role === 'initiator') {
+            setCallStatus('ringing');
+            // Initiator waits a bit for the seller to answer the WhatsApp message
+            setTimeout(() => {
+              const call = peer.call(`${callId}-seller`, stream);
+              handleCall(call);
+            }, 5000);
+          }
+        } catch (err) {
+          showAlert("Microphone access denied. Please enable it to call.");
+          setCallStatus('ended');
+        }
+      });
+
+      peer.on('call', (call) => {
+        setCallStatus('connected');
+        call.answer(localStreamRef.current);
+        handleCall(call);
+      });
+
+      const handleCall = (call) => {
+        call.on('stream', (remoteStream) => {
+          setCallStatus('connected');
+          remoteAudioRef.current.srcObject = remoteStream;
+          remoteAudioRef.current.play();
+        });
+        call.on('close', () => setCallStatus('ended'));
+        call.on('error', () => setCallStatus('ended'));
+      };
+
+      return () => {
+        if (localStreamRef.current) localStreamRef.current.getTracks().forEach(t => t.stop());
+        if (peerRef.current) peerRef.current.destroy();
+      };
+    }, [callId, role]);
+
+    const endCall = () => {
+      if (peerRef.current) peerRef.current.destroy();
+      setCallStatus('ended');
+      setTimeout(() => window.location.href = '/', 1500);
+    };
+
+    const toggleMute = () => {
+      if (localStreamRef.current) {
+        const audioTrack = localStreamRef.current.getAudioTracks()[0];
+        audioTrack.enabled = !audioTrack.enabled;
+        setIsMuted(!audioTrack.enabled);
+      }
+    };
+
+    return (
+      <div className="container" style={{ paddingTop: '150px', textAlign: 'center' }}>
+        <div className="glass" style={{ padding: '60px 40px', borderRadius: '40px', maxWidth: '400px', margin: '0 auto' }}>
+          <div style={{ marginBottom: '40px' }}>
+            <div className={`pulse-${callStatus}`} style={{
+              width: '120px', height: '120px', background: 'rgba(212,175,55,0.1)',
+              borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto',
+              border: '2px solid var(--accent-gold)'
+            }}>
+              <User size={60} color="var(--accent-gold)" />
+            </div>
+          </div>
+
+          <h2 style={{ fontSize: '2rem', marginBottom: '10px' }}>
+            {callStatus === 'connecting' && 'Connecting...'}
+            {callStatus === 'ringing' && 'Ringing...'}
+            {callStatus === 'connected' && 'Secure Call Live'}
+            {callStatus === 'ended' && 'Call Ended'}
+          </h2>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '40px' }}>
+            {callStatus === 'connected' ? 'Enjoy your private conversation' : 'Establishing encryption bridge...'}
+          </p>
+
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '30px' }}>
+            <button
+              onClick={toggleMute}
+              style={{
+                width: '60px', height: '60px', borderRadius: '50%', background: isMuted ? '#ff4b2b' : 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff'
+              }}
+            >
+              {isMuted ? <Sparkles size={24} /> : <Hash size={24} />}
+            </button>
+
+            <button
+              onClick={endCall}
+              style={{
+                width: '70px', height: '70px', borderRadius: '50%', background: '#ff4b2b',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff'
+              }}
+            >
+              <X size={32} />
+            </button>
+          </div>
+        </div>
+
+        <style>{`
+          .pulse-ringing { animation: pulse 2s infinite; }
+          .pulse-connected { border-color: #22c55e !important; box-shadow: 0 0 20px rgba(34, 197, 94, 0.3); }
+          @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 20px rgba(212, 175, 55, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); } }
+        `}</style>
+      </div>
+    );
+  };
+
+  const MyPropertiesView = () => {
+    const myProps = properties.filter(p => p.mobile === user?.phone);
+
+    return (
+      <div className="container" style={{ paddingTop: '120px', paddingBottom: '100px' }}>
+        <div style={{ marginBottom: '3rem' }}>
+          <h2 style={{ fontSize: '2.5rem' }}>{t.myProperties.title}</h2>
+          <p style={{ color: 'var(--text-secondary)' }}>{t.myProperties.subtitle}</p>
+        </div>
+
+        {myProps.length === 0 ? (
+          <div className="glass" style={{ padding: '60px', textAlign: 'center', borderRadius: '30px' }}>
+            <HomeIcon size={48} color="var(--accent-gold)" style={{ opacity: 0.5, marginBottom: '20px' }} />
+            <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem' }}>{t.myProperties.noProperties}</p>
+            <button onClick={() => setView('seller')} className="premium-button" style={{ marginTop: '30px' }}>
+              <Plus size={18} /> {t.nav.postProperty}
+            </button>
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '30px' }}>
+            {myProps.map(prop => (
+              <div key={prop.id} className="glass animate-fade" style={{ borderRadius: '20px', overflow: 'hidden' }}>
+                <div style={{ height: '200px', overflow: 'hidden', position: 'relative' }}>
+                  <img src={prop.image || (prop.media && prop.media[0]?.url)} alt={prop.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div style={{ position: 'absolute', top: '15px', right: '15px' }}>
+                    <span className="badge" style={{ background: 'var(--bg-primary)' }}>{prop.category || 'Plot'}</span>
+                  </div>
+                </div>
+                <div style={{ padding: '20px' }}>
+                  <h3 style={{ fontSize: '1.25rem', marginBottom: '10px' }}>{prop.title}</h3>
+                  <div style={{ color: 'var(--accent-gold)', fontWeight: 700, fontSize: '1.2rem', marginBottom: '20px' }}>
+                    ₹{prop.price?.toLocaleString()}
+                  </div>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <button
+                      onClick={() => {
+                        setSelectedProperty(prop);
+                        setView('detail');
+                      }}
+                      className="secondary-button"
+                      style={{ flex: 1, padding: '8px', fontSize: '0.85rem' }}
+                    >
+                      {t.buyer.details}
+                    </button>
+                    <button
+                      onClick={() => handleDeleteProperty(prop.id)}
+                      className="secondary-button"
+                      style={{ flex: 1, padding: '8px', fontSize: '0.85rem', color: '#ff4444', borderColor: 'rgba(255,68,68,0.3)' }}
+                    >
+                      {t.myProperties.delete}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="App">
@@ -1283,6 +1663,8 @@ _Verified Professional Lead_ 🟢`;
       {view === 'builders' && <BuyerView />} {/* Reusing buyer view for matching feed */}
       {view === 'seller' && <PostPropertyView />}
       {view === 'detail' && selectedProperty && <PropertyDetailView />}
+      {view === 'call' && <CallInterface />}
+      {view === 'my-properties' && <MyPropertiesView />}
 
       {view === 'auth' && (
         <div className="container" style={{ paddingTop: '150px', display: 'flex', justifyContent: 'center' }}>

@@ -3,6 +3,7 @@ export const translations = {
         nav: {
             marketplace: 'Marketplace',
             postProperty: 'Post Your Property',
+            myProperties: 'My Properties',
             connected: 'Connected'
         },
         hero: {
@@ -114,15 +115,26 @@ export const translations = {
         },
         alerts: {
             logout: 'Are you sure you want to log out?',
+            deleteProperty: 'Are you sure you want to delete this property?',
             listingLive: '✅ Your professional listing is live! Check your WhatsApp for the summary.',
             listingFailed: '❌ Listing partially failed. Bot might be offline.',
             welcomeBack: '👋 Welcome back,'
+        },
+        myProperties: {
+            title: 'My Listings',
+            subtitle: 'Manage your posted properties',
+            noProperties: 'You haven\'t posted any properties yet.',
+            edit: 'Edit',
+            delete: 'Delete',
+            saveChanges: 'Save Changes',
+            cancel: 'Cancel'
         }
     },
     hi: {
         nav: {
             marketplace: 'मार्केटप्लेस',
             postProperty: 'अपनी संपत्ति पोस्ट करें',
+            myProperties: 'मेरी संपत्तियाँ',
             connected: 'जुड़े हुए हैं'
         },
         hero: {
@@ -234,9 +246,19 @@ export const translations = {
         },
         alerts: {
             logout: 'क्या आप वाकई लॉग आउट करना चाहते हैं?',
+            deleteProperty: 'क्या आप वाकई इस संपत्ति को हटाना चाहते हैं?',
             listingLive: '✅ आपकी पेशेवर लिस्टिंग लाइव है! सारांश के लिए अपना व्हाट्सएप देखें।',
             listingFailed: '❌ लिस्टिंग आंशिक रूप से विफल रही। बॉट ऑफलाइन हो सकता है।',
             welcomeBack: '👋 वापस स्वागत है,'
+        },
+        myProperties: {
+            title: 'मेरी लिस्टिंग',
+            subtitle: 'अपनी पोस्ट की गई संपत्तियों को प्रबंधित करें',
+            noProperties: 'आपने अभी तक कोई संपत्ति पोस्ट नहीं की है।',
+            edit: 'संपादित करें',
+            delete: 'हटाएं',
+            saveChanges: 'परिवर्तन सहेजें',
+            cancel: 'रद्द करें'
         }
     }
 };

@@ -449,12 +449,15 @@ ${data.description ? `*Note:* ${data.description}` : ''}
 _Verified Professional Lead_ 🟢`;
 
     try {
+      // WhatsApp summary removed as requested
+      /*
       const params = new URLSearchParams({
         phone: user.phone,
         message: msg
       });
       // Use the new /send-msg for custom text
       await fetch(`https://dalaalstreetss.alwaysdata.net/send-msg?${params.toString()}`);
+      */
 
       // Multi-Media Handling
       let mediaItems = [];
@@ -497,6 +500,7 @@ _Verified Professional Lead_ 🟢`;
         beds: parseInt(data.beds || 0),
         baths: parseInt(data.baths || 0),
         floors: data.totalFloors || data.floors,
+        ownership: data.ownership || "Freehold",
         description: data.description || `Professional listing.`,
         seller: user.name || "Verified Professional",
         mobile: user.phone,
@@ -1106,20 +1110,24 @@ _Verified Professional Lead_ 🟢`;
                   <input name="location" placeholder="e.g. DLF Phase 5" required />
                 </div>
                 <div className="input-group">
-                  <label>{t.seller.price}</label>
-                  <input name="price" type="number" placeholder="50,00,000" required />
+                  <label>Ownership Type</label>
+                  <select name="ownership" className="glass">
+                    <option>Freehold</option>
+                    <option>Power of Attorney (POA)</option>
+                    <option>Leasehold</option>
+                    <option>Stamp Duty</option>
+                  </select>
                 </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-                <div className="input-group">
-                  <label>{sellerType === 'agricultural' ? t.seller.areaAcres : t.seller.areaSqft}</label>
-                  <input name="area" type="text" placeholder={sellerType === 'agricultural' ? 'e.g. 2 Acres' : '1200'} required />
-                </div>
-                <div className="input-group">
-                  <label>{t.seller.floors}</label>
-                  <input name="totalFloors" type="text" placeholder={sellerType === 'residential' ? "Total Floors (e.g. 4)" : "Additional Details"} />
-                </div>
+                <div className="input-group"><label>{t.seller.price}</label><input name="price" type="number" placeholder="50,00,000" required /></div>
+                <div className="input-group"><label>{t.seller.areaSqft}</label><input name="area" type="text" placeholder="1200" required /></div>
+              </div>
+
+              <div className="input-group">
+                <label>{t.seller.floors}</label>
+                <input name="totalFloors" type="text" placeholder={sellerType === 'residential' ? "Total Floors (e.g. 4)" : "Additional Details"} />
               </div>
 
               {sellerType === 'residential' && (
@@ -1604,6 +1612,7 @@ _Verified Professional Lead_ 🟢`;
     const [beds, setBeds] = useState(editingProperty.beds || '');
     const [baths, setBaths] = useState(editingProperty.baths || '');
     const [floors, setFloors] = useState(editingProperty.floors || '');
+    const [ownership, setOwnership] = useState(editingProperty.ownership || 'Freehold');
 
     return (
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 2000, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
@@ -1650,9 +1659,19 @@ _Verified Professional Lead_ 🟢`;
                 <input type="number" value={area} onChange={(e) => setArea(e.target.value)} className="premium-input" style={{ width: '100%' }} />
               </div>
               <div>
-                <label style={{ color: 'var(--accent-gold)', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>Floors/Details</label>
-                <input type="text" value={floors} onChange={(e) => setFloors(e.target.value)} className="premium-input" style={{ width: '100%' }} />
+                <label style={{ color: 'var(--accent-gold)', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>Ownership</label>
+                <select value={ownership} onChange={(e) => setOwnership(e.target.value)} className="premium-input" style={{ width: '100%', background: 'rgb(30,30,30)' }}>
+                  <option>Freehold</option>
+                  <option>Power of Attorney (POA)</option>
+                  <option>Leasehold</option>
+                  <option>Stamp Duty</option>
+                </select>
               </div>
+            </div>
+
+            <div className="input-group">
+              <label style={{ color: 'var(--accent-gold)', fontSize: '0.9rem', marginBottom: '8px', display: 'block' }}>Floors/Details</label>
+              <input type="text" value={floors} onChange={(e) => setFloors(e.target.value)} className="premium-input" style={{ width: '100%' }} />
             </div>
 
             {category === 'Residential' && (
@@ -1687,7 +1706,8 @@ _Verified Professional Lead_ 🟢`;
                   sqft: parseInt(area),
                   beds: parseInt(beds || 0),
                   baths: parseInt(baths || 0),
-                  floors
+                  floors,
+                  ownership
                 })}
                 className="premium-button"
                 style={{ flex: 1 }}

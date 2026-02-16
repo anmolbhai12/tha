@@ -864,7 +864,13 @@ _Verified Professional Lead_ 🟢`;
             <div className="animate-fade">
               <span className="badge">{t.hero.badge}</span>
               <h1 style={{ fontSize: 'clamp(3rem, 8vw, 5rem)', marginBottom: '1.5rem', maxWidth: '900px', lineHeight: 1.1, color: '#fff' }}>
-                {t.hero.title.split('Masterpiece')[0]}<span className="text-gradient-gold">Masterpiece</span>{t.hero.title.split('Masterpiece')[1]}
+                {t.hero.title.includes('Masterpiece') ? (
+                  <>
+                    {t.hero.title.split('Masterpiece')[0]}
+                    <span className="text-gradient-gold">Masterpiece</span>
+                    {t.hero.title.split('Masterpiece')[1]}
+                  </>
+                ) : t.hero.title}
               </h1>
               <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', maxWidth: '600px', marginBottom: '3rem' }}>
                 {t.hero.subtitle}

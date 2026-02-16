@@ -44,6 +44,7 @@ function App() {
   const [filterArea, setFilterArea] = useState('all');
   const [filterBudget, setFilterBudget] = useState('all');
   const [filterListing, setFilterListing] = useState('all');
+  const [isSearchActive, setIsSearchActive] = useState(false);
 
   const t = translations[language];
 
@@ -653,9 +654,13 @@ _Verified Professional Lead_ 🟢`;
               type="text"
               placeholder={t.buyer.searchPlaceholder || 'Search properties...'}
               value={searchQuery}
+              onFocus={() => setIsSearchActive(true)}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
-                if (e.target.value && view !== 'buyer') setView('buyer');
+                if (e.target.value && view !== 'buyer') {
+                  setView('buyer');
+                  setIsSearchActive(true);
+                }
               }}
               style={{
                 width: '100%',
@@ -669,8 +674,8 @@ _Verified Professional Lead_ 🟢`;
             />
           </div>
 
-          {/* Quick Filters - Visible in Landing/Buyer mode or when searching */}
-          {(view === 'landing' || view === 'buyer' || searchQuery) && (
+          {/* Quick Filters - Visible when search is active or has query */}
+          {(isSearchActive || searchQuery || (view === 'buyer' && searchQuery)) && (
             <div className="animate-fade" style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '5px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               <select
                 className="glass"
@@ -871,7 +876,7 @@ _Verified Professional Lead_ 🟢`;
               <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', maxWidth: '600px', marginBottom: '3rem' }}>
                 {t.hero.subtitle}
               </p>
-              <button onClick={() => setView('buyer')} className="premium-button" style={{ padding: '18px 40px', fontSize: '1.2rem', marginTop: '1rem' }}>
+              <button onClick={() => { setView('buyer'); setIsSearchActive(true); }} className="premium-button" style={{ padding: '18px 40px', fontSize: '1.2rem', marginTop: '1rem' }}>
                 {t.hero.findHomes} <ArrowRight size={20} style={{ marginLeft: '10px' }} />
               </button>
             </div>

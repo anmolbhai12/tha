@@ -208,7 +208,57 @@ textarea:focus {
 /* Mobile Optimizations */
 @media (max-width: 768px) {
   .container {
-    padding: 0 1rem;
+    padding: 0 0.75rem;
+  }
+
+  /* Navigation Mobile Fixes */
+  nav {
+    padding: 10px 0 !important;
+  }
+
+  nav .container {
+    gap: 6px !important;
+    flex-wrap: nowrap !important;
+  }
+
+  /* Hide logo text, keep icon only */
+  nav img {
+    height: 40px !important;
+    max-width: 80px !important;
+  }
+
+  /* Hide "Marketplace" text on very small screens */
+  nav a {
+    font-size: 0 !important;
+    padding: 8px !important;
+    min-width: auto !important;
+  }
+
+  nav a::before {
+    content: "🏠";
+    font-size: 1.2rem;
+  }
+
+  /* Compact Post Button */
+  nav .premium-button {
+    padding: 8px 12px !important;
+    font-size: 0.75rem !important;
+    gap: 4px !important;
+    white-space: nowrap;
+  }
+
+  /* User Profile Compact */
+  nav [style*="rgba(255,215,0"] {
+    padding: 6px 10px !important;
+    gap: 6px !important;
+  }
+
+  nav [style*="rgba(255,215,0"] span {
+    font-size: 0.8rem !important;
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   h1 {

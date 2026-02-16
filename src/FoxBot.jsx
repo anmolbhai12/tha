@@ -174,7 +174,7 @@ const FoxBot = ({ properties, setView, setSelectedProperty, userName, user }) =>
                         animation: 'bounce 2s infinite', pointerEvents: 'none',
                         border: '2px solid #fff'
                     }}>
-                        CLICK HERE FOR HELP
+                        ASK FOXY ANYTHING
                         <div style={{
                             position: 'absolute', bottom: '-8px', right: '25px',
                             width: '0', height: '0', borderLeft: '8px solid transparent',

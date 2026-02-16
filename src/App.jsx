@@ -643,27 +643,31 @@ _Verified Professional Lead_ 🟢`;
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flex: 1, maxWidth: '600px', marginLeft: '20px', marginRight: '20px' }}>
-          {/* Global Search Bar */}
-          {view === 'buyer' && (
-            <div style={{ flex: 1, position: 'relative' }}>
-              <Search size={18} style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
-              <input
-                type="text"
-                placeholder={t.buyer.searchPlaceholder || 'Search properties...'}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '10px 15px 10px 45px',
-                  borderRadius: '100px',
-                  background: 'var(--bg-tertiary)',
-                  border: '1px solid var(--border-color)',
-                  color: 'var(--text-primary)',
-                  fontSize: '0.9rem'
-                }}
-              />
-            </div>
-          )}
+          {/* Global Search Bar - Now truly global */}
+          <div style={{ flex: 1, position: 'relative' }}>
+            <Search size={18} style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
+            <input
+              type="text"
+              placeholder={t.buyer.searchPlaceholder || 'Search properties...'}
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                if (view !== 'buyer') setView('buyer');
+              }}
+              onFocus={() => {
+                if (view !== 'buyer') setView('buyer');
+              }}
+              style={{
+                width: '100%',
+                padding: '10px 15px 10px 45px',
+                borderRadius: '100px',
+                background: 'var(--bg-tertiary)',
+                border: '1px solid var(--border-color)',
+                color: 'var(--text-primary)',
+                fontSize: '0.9rem'
+              }}
+            />
+          </div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
@@ -870,22 +874,9 @@ _Verified Professional Lead_ 🟢`;
                 <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', maxWidth: '600px', marginBottom: '3rem' }}>
                   {t.hero.subtitle}
                 </p>
-                <div onClick={() => setIsSearchExpanded(true)} className="glass" style={{
-                  padding: '10px',
-                  borderRadius: '100px',
-                  display: 'flex',
-                  maxWidth: '700px',
-                  cursor: 'text',
-                  marginTop: '1.5rem',
-                  border: '1px solid var(--accent-gold)',
-                  boxShadow: '0 0 20px rgba(197, 160, 89, 0.1)'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0 25px', flex: 1 }}>
-                    <Search size={22} color="var(--accent-gold)" />
-                    <span style={{ color: 'var(--text-secondary)' }}>{t.hero.searchPlaceholder}</span>
-                  </div>
-                  <button className="premium-button">{t.hero.findHomes}</button>
-                </div>
+                <button onClick={() => setView('buyer')} className="premium-button" style={{ padding: '18px 40px', fontSize: '1.2rem', marginTop: '1rem' }}>
+                  {t.hero.findHomes} <ArrowRight size={20} style={{ marginLeft: '10px' }} />
+                </button>
               </div>
             )}
           </div>

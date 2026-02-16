@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Send, X, MessageSquare, Home, Navigation, Search, User, Crown, Sparkles } from 'lucide-react';
 import { gsap } from 'gsap';
 
-const FoxAvatar = ({ size = 40 }) => {
+const FoxAvatar = ({ size = 40, user }) => {
     const [imgSrc, setImgSrc] = useState("/fox.png");
     const [useFallback, setUseFallback] = useState(false);
 
@@ -201,7 +201,7 @@ const FoxBot = ({ properties, setView, setSelectedProperty, userName, user }) =>
                             padding: '0', overflow: 'hidden'
                         }}
                     >
-                        <FoxAvatar size={85} />
+                        <FoxAvatar size={85} user={user} />
                     </button>
                 </div>
             )}
@@ -221,7 +221,7 @@ const FoxBot = ({ properties, setView, setSelectedProperty, userName, user }) =>
                         justifyContent: 'space-between', alignItems: 'center'
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <FoxAvatar size={45} />
+                            <FoxAvatar size={45} user={user} />
                             <div>
                                 <h4 style={{ color: '#ff8c00', fontSize: '1.1rem', margin: 0 }}>Foxy</h4>
                                 <span style={{ fontSize: '0.7rem', color: '#22c55e', display: 'flex', alignItems: 'center', gap: '4px' }}>

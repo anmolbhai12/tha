@@ -63,6 +63,12 @@ const Nav = ({
                 setIsSearchActive(true);
               }
             }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.target.blur();
+                setIsSearchActive(false);
+              }
+            }}
             style={{
               width: '100%',
               padding: '10px 15px 10px 45px',
@@ -373,8 +379,10 @@ const BuyerView = ({
     <div className="container" style={{ paddingTop: '120px', paddingBottom: '100px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3rem', flexWrap: 'wrap', gap: '20px' }}>
         <div>
-          <h2 style={{ fontSize: '2.5rem' }}>{t.buyer.title}</h2>
-          <p style={{ color: 'var(--text-secondary)' }}>{t.buyer.subtitle} ({filteredProperties.length})</p>
+          <h2 style={{ fontSize: '2.5rem' }}>{searchQuery ? (language === 'en' ? 'Search Results' : 'खोज परिणाम') : t.buyer.title}</h2>
+          <p style={{ color: 'var(--text-secondary)' }}>
+            {searchQuery ? (language === 'en' ? `Found ${filteredProperties.length} matches` : `${filteredProperties.length} परिणाम मिले`) : t.buyer.subtitle}
+          </p>
         </div>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
           <button
@@ -398,47 +406,104 @@ const BuyerView = ({
         </div>
       </div>
 
-      <div className="property-grid">
-        {filteredProperties.map((p, index) => (
-          <div
-            key={p.id}
-            className="property-card glass animate-fade"
-            style={{ animationDelay: `${index * 0.1}s`, cursor: 'pointer' }}
-            onClick={() => {
-              if (user) {
-                setSelectedProperty(p);
-                setView('detail');
-              } else {
-                setView('auth');
-              }
-            }}
-          >
-            <div style={{ position: 'relative', height: '240px', overflow: 'hidden' }}>
-              <img
-                src={p.image}
-                alt={p.title}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-              <div style={{ position: 'absolute', top: '15px', right: '15px', background: 'var(--accent-gold)', color: '#000', padding: '5px 15px', borderRadius: '20px', fontWeight: 'bold', fontSize: '0.8rem' }}>
-                {p.category}
-              </div>
-            </div>
-            <div style={{ padding: '25px' }}>
-              <div style={{ color: 'var(--accent-gold)', fontWeight: 'bold', fontSize: '1.25rem', marginBottom: '10px' }}>
-                ₹{p.price.toLocaleString('en-IN')}
-              </div>
-              <h3 style={{ fontSize: '1.25rem', marginBottom: '8px' }}>{p.title}</h3>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '20px' }}>
-                <MapPin size={14} /> {p.location}
-              </div>
-              <div style={{ display: 'flex', gap: '15px', color: 'var(--text-secondary)', borderTop: '1px solid var(--border-color)', paddingTop: '15px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}><Bed size={16} /> {p.beds}</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}><Bath size={16} /> {p.baths}</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}><Maximize size={16} /> {p.sqft || p.area} sqft</div>
-              </div>
-            </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        {filteredProperties.length === 0 ? (
+          <div className="glass" style={{ padding: '60px', textAlign: 'center', borderRadius: '30px' }}>
+            <Search size={48} color="var(--accent-gold)" style={{ opacity: 0.5, marginBottom: '20px' }} />
+            <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem' }}>
+              {language === 'en' ? 'No properties found matching your search.' : 'आपकी खोज से मेल खाने वाली कोई संपत्ति नहीं मिली।'}
+            </p>
           </div>
-        ))}
+        ) : (
+          filteredProperties.map((p, index) => (
+            <div
+              key={p.id}
+              className="glass animate-fade"
+              style={{
+                animationDelay: `${index * 0.1}s`,
+                cursor: 'pointer',
+                borderRadius: '25px',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: window.innerWidth < 768 ? 'column' : 'row',
+                border: '1px solid rgba(255,255,255,0.05)',
+                transition: 'transform 0.3s ease, border-color 0.3s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'var(--accent-gold)';
+                e.currentTarget.style.transform = 'translateY(-5px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
+              onClick={() => {
+                if (user) {
+                  setSelectedProperty(p);
+                  setView('detail');
+                } else {
+                  setView('auth');
+                }
+              }}
+            >
+              <div style={{
+                width: window.innerWidth < 768 ? '100%' : '350px',
+                height: window.innerWidth < 768 ? '250px' : 'auto',
+                position: 'relative',
+                overflow: 'hidden',
+                flexShrink: 0
+              }}>
+                <img
+                  src={p.image}
+                  alt={p.title}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+                <div style={{
+                  position: 'absolute', top: '15px', right: '15px',
+                  background: 'var(--accent-gold)', color: '#000',
+                  padding: '5px 15px', borderRadius: '20px',
+                  fontWeight: 'bold', fontSize: '0.8rem',
+                  boxShadow: '0 4px 10px rgba(0,0,0,0.3)'
+                }}>
+                  {p.category}
+                </div>
+              </div>
+
+              <div style={{ padding: '30px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
+                  <div style={{ color: 'var(--accent-gold)', fontWeight: 'bold', fontSize: '1.8rem' }}>
+                    ₹{p.price.toLocaleString('en-IN')}
+                  </div>
+                </div>
+
+                <h3 style={{ fontSize: '1.6rem', marginBottom: '12px', fontFamily: 'Playfair Display' }}>{p.title}</h3>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontSize: '1rem', marginBottom: '25px' }}>
+                  <MapPin size={18} color="var(--accent-gold)" /> {p.location}
+                </div>
+
+                <div style={{
+                  display: 'flex', gap: '25px', color: 'var(--text-secondary)',
+                  borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px',
+                  marginTop: 'auto'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Bed size={20} color="var(--accent-gold)" />
+                    <span>{p.beds} Beds</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Bath size={20} color="var(--accent-gold)" />
+                    <span>{p.baths} Baths</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Maximize size={20} color="var(--accent-gold)" />
+                    <span>{p.sqft || p.area} sqft</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

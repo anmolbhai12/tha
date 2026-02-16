@@ -47,7 +47,7 @@ const Nav = ({
         <img src="/logo-tha-horizontal.svg" alt="Tha Logo" style={{ height: '70px', width: 'auto' }} />
       </div>
 
-      <div className="nav-search-container" style={{ display: 'flex', flexDirection: 'column', gap: '10px', flex: 1, maxWidth: '600px', marginLeft: '20px', marginRight: '20px' }}>
+      <div className="nav-search-container" style={{ display: 'flex', flexDirection: 'column', gap: '10px', flex: 1, maxWidth: window.innerWidth < 768 ? 'none' : '600px', marginLeft: window.innerWidth < 768 ? '5px' : '20px', marginRight: window.innerWidth < 768 ? '5px' : '20px' }}>
         {/* Global Search Bar - Now truly global */}
         <div style={{ width: '100%', position: 'relative' }}>
           <Search size={18} style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
@@ -126,7 +126,7 @@ const Nav = ({
 
       <div className="nav-buttons-container" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
         <button onClick={() => user ? setView('seller') : setView('auth')} className="premium-button">
-          <Plus size={18} /> {t.nav.postProperty}
+          <Plus size={18} /> <span className={window.innerWidth < 400 ? 'mobile-hide' : ''}>{t.nav.postProperty}</span>
         </button>
 
         <div style={{ position: 'relative' }}>
@@ -425,7 +425,7 @@ const BuyerView = ({
                 borderRadius: '25px',
                 overflow: 'hidden',
                 display: 'flex',
-                flexDirection: window.innerWidth < 768 ? 'column' : 'row',
+                flexDirection: window.innerWidth < 992 ? 'column' : 'row',
                 border: '1px solid rgba(255,255,255,0.05)',
                 transition: 'transform 0.3s ease, border-color 0.3s ease',
               }}
@@ -447,8 +447,8 @@ const BuyerView = ({
               }}
             >
               <div style={{
-                width: window.innerWidth < 768 ? '100%' : '350px',
-                height: window.innerWidth < 768 ? '250px' : 'auto',
+                width: window.innerWidth < 992 ? '100%' : '350px',
+                height: window.innerWidth < 992 ? '250px' : 'auto',
                 position: 'relative',
                 overflow: 'hidden',
                 flexShrink: 0
@@ -724,7 +724,7 @@ const PropertyDetailView = ({ t, setView, selectedProperty, user, setIsChatOpen 
         <X size={18} /> {t.detail.back}
       </button>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '40px', alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 992 ? '1fr' : '1fr 400px', gap: '40px', alignItems: 'start' }}>
         {/* Left Side: Media & Description */}
         <div>
           <div style={{ borderRadius: '30px', overflow: 'hidden', background: '#000', height: '500px', marginBottom: '20px', position: 'relative', border: '1px solid var(--glass-border)' }}>
@@ -763,7 +763,7 @@ const PropertyDetailView = ({ t, setView, selectedProperty, user, setIsChatOpen 
               <MapPin size={18} color="var(--accent-gold)" /> {selectedProperty.location}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '40px', padding: '20px 0', borderTop: '1px solid var(--glass-border)', borderBottom: '1px solid var(--glass-border)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 600 ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: '20px', marginBottom: '40px', padding: '20px 0', borderTop: '1px solid var(--glass-border)', borderBottom: '1px solid var(--glass-border)' }}>
               <div style={{ textAlign: 'center' }}>
                 <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '5px' }}>Beds</p>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>

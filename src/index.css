@@ -391,6 +391,16 @@ textarea:focus {
     font-size: 0.7rem !important;
     gap: 8px !important;
   }
+
+  /* Responsive Grid Fixes */
+  .responsive-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  .mobile-hide {
+    display: none !important;
+  }
 }
 
 /* Extra Small Screens - Phones under 400px */
@@ -412,7 +422,8 @@ textarea:focus {
   }
 
   nav [style*="rgba(255,215,0"] span {
-    max-width: 50px;
+    max-width: 40px;
+    font-size: 0.6rem !important;
   }
 
   /* Property cards even more compact */

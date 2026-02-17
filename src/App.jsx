@@ -92,7 +92,7 @@ const Nav = ({
         </div>
 
         {/* Quick Filters - Always visible in Buyer view or when searching */}
-        {(isSearchActive || searchQuery || view === 'buyer') && (
+        {(isSearchActive || searchQuery) && (
           <div className="animate-fade" style={{
             display: 'flex',
             gap: '8px',

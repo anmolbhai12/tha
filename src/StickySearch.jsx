@@ -35,8 +35,8 @@ const StickySearch = ({
                 right: 0,
                 bottom: 0,
                 zIndex: 4000,
-                background: 'rgba(10, 10, 10, 0.98)',
-                backdropFilter: 'blur(20px)',
+                background: 'rgba(0, 0, 0, 0.98)',
+                backdropFilter: 'blur(30px)',
                 display: 'flex',
                 flexDirection: 'column',
                 padding: '20px'
@@ -145,11 +145,11 @@ const StickySearch = ({
                         value={filterBudget}
                         onChange={(e) => setFilterBudget(e.target.value)}
                     >
-                        <option value="all">{t?.filters?.anyBudget || "Any Budget"}</option>
-                        <option value="budget">{t?.ranges?.under50L || "Under ₹50L"}</option>
-                        <option value="mid">{t?.ranges?.midRange || "₹50L - ₹1Cr"}</option>
-                        <option value="premium">{t?.ranges?.premiumRange || "₹1Cr - ₹5Cr"}</option>
-                        <option value="luxury">{t?.ranges?.luxuryRange || "₹5Cr+"}</option>
+                        <option value="all" style={{ background: '#000' }}>{t?.filters?.anyBudget || "Any Budget"}</option>
+                        <option value="budget" style={{ background: '#000' }}>{t?.ranges?.under50L || "Under ₹50L"}</option>
+                        <option value="mid" style={{ background: '#000' }}>{t?.ranges?.midRange || "₹50L - ₹1Cr"}</option>
+                        <option value="premium" style={{ background: '#000' }}>{t?.ranges?.premiumRange || "₹1Cr - ₹5Cr"}</option>
+                        <option value="luxury" style={{ background: '#000' }}>{t?.ranges?.luxuryRange || "₹5Cr+"}</option>
                     </select>
                 </div>
 

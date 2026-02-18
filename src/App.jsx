@@ -42,7 +42,15 @@ const Nav = ({
   language, setLanguage, isChoosingLanguage, setIsChoosingLanguage,
   setIsEditingName, setTempName, showConfirm, setIsStickySearchOpen
 }) => (
-  <nav className="glass" style={{ position: 'fixed', top: 0, width: '100%', zIndex: 1000, padding: '1rem 0' }}>
+  <nav className="glass" style={{
+    position: 'fixed',
+    top: 0,
+    width: '100%',
+    zIndex: 1000,
+    padding: '0.8rem 0',
+    borderBottom: '1px solid var(--border-color)',
+    background: 'rgba(0,0,0,0.85)'
+  }}>
     <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => setView('landing')}>
         <img src="/logo-tha-horizontal.svg" alt="Tha Logo" style={{ height: '70px', width: 'auto' }} />
@@ -327,12 +335,27 @@ const CustomModal = ({ modal, closeModal }) => {
 
 const LandingView = ({ t, setView, setIsSearchActive }) => (
   <React.Fragment>
-    <div className="hero-section" style={{ height: '90vh', display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden' }}>
+    <div className="hero-section" style={{
+      height: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      position: 'relative',
+      overflow: 'hidden',
+      background: '#000'
+    }}>
       <div className="hero-bg"></div>
       <div className="container hero-content">
-        <div className="animate-fade">
-          <span className="badge">{t.hero.badge}</span>
-          <h1 style={{ fontSize: 'clamp(3rem, 8vw, 5rem)', marginBottom: '1.5rem', maxWidth: '900px', lineHeight: 1.1, color: '#fff' }}>
+        <div className="animate-fade" style={{ textAlign: 'center', margin: '0 auto' }}>
+          <span className="badge" style={{ marginBottom: '2rem' }}>{t.hero.badge}</span>
+          <h1 style={{
+            fontSize: 'clamp(3.5rem, 10vw, 6rem)',
+            marginBottom: '1.5rem',
+            maxWidth: '1000px',
+            margin: '0 auto 1.5rem',
+            lineHeight: 1,
+            color: '#fff',
+            textShadow: '0 4px 12px rgba(0,0,0,0.5)'
+          }}>
             {t.hero.title.includes('Masterpiece') ? (
               <>
                 {t.hero.title.split('Masterpiece')[0]}
@@ -341,12 +364,26 @@ const LandingView = ({ t, setView, setIsSearchActive }) => (
               </>
             ) : t.hero.title}
           </h1>
-          <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', maxWidth: '600px', marginBottom: '3rem' }}>
+          <p style={{
+            fontSize: '1.4rem',
+            color: 'var(--text-secondary)',
+            maxWidth: '700px',
+            margin: '0 auto 4rem',
+            lineHeight: 1.6,
+            fontWeight: 300,
+            letterSpacing: '0.01em'
+          }}>
             {t.hero.subtitle}
           </p>
-          <button onClick={() => { setView('buyer'); setIsSearchActive(false); }} className="premium-button" style={{ padding: '18px 40px', fontSize: '1.2rem', marginTop: '1rem' }}>
-            {t.hero.findHomes} <ArrowRight size={20} style={{ marginLeft: '10px' }} />
-          </button>
+          <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button
+              onClick={() => { setView('buyer'); setIsSearchActive(false); }}
+              className="premium-button"
+              style={{ padding: '20px 50px', fontSize: '1.25rem' }}
+            >
+              {t.hero.findHomes} <ArrowRight size={22} style={{ marginLeft: '12px' }} />
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -478,35 +515,46 @@ const BuyerView = ({
   });
 
   return (
-    <div className="container" style={{ paddingTop: '120px', paddingBottom: '100px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3rem', flexWrap: 'wrap', gap: '20px' }}>
-        <div>
-          <h2 style={{ fontSize: '2.5rem' }}>{searchQuery ? (language === 'en' ? 'Search Results' : 'खोज परिणाम') : t.buyer.title}</h2>
-          <p style={{ color: 'var(--text-secondary)' }}>
-            {searchQuery ? (language === 'en' ? `Found ${filteredProperties.length} matches` : `${filteredProperties.length} परिणाम मिले`) : t.buyer.subtitle}
-          </p>
-        </div>
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-          <select
-            className="glass"
-            style={{ padding: '10px 20px', borderRadius: '30px', color: 'white', border: '1px solid var(--accent-gold)', background: 'transparent' }}
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-          >
-            <option value="latest">Latest to Oldest</option>
-            <option value="old">Oldest to Latest</option>
-            <option value="priceHigh">Price: High to Low</option>
-            <option value="priceLow">Price: Low to High</option>
-          </select>
-        </div>
+    <div className="container" style={{ paddingTop: '140px', paddingBottom: '100px' }}>
+      {/* Centered Classic Header */}
+      <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+        <h2 style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)', letterSpacing: '-0.04em', marginBottom: '15px' }}>
+          {searchQuery ? (language === 'en' ? 'Search Results' : 'खोज परिणाम') : t.buyer.title}
+        </h2>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', fontWeight: 300, maxWidth: '700px', margin: '0 auto' }}>
+          {searchQuery ? (language === 'en' ? `Found ${filteredProperties.length} properties matching your search` : `${filteredProperties.length} संपत्तियाँ मिलीं`) : t.buyer.subtitle}
+        </p>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* Sorting Utilities */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '30px' }}>
+        <select
+          className="glass"
+          style={{
+            padding: '10px 25px',
+            borderRadius: '100px',
+            color: 'white',
+            border: '1px solid var(--border-color)',
+            background: 'transparent',
+            fontSize: '0.9rem'
+          }}
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+        >
+          <option value="latest" style={{ background: '#000' }}>Latest First</option>
+          <option value="old" style={{ background: '#000' }}>Oldest First</option>
+          <option value="priceHigh" style={{ background: '#000' }}>Price: High to Low</option>
+          <option value="priceLow" style={{ background: '#000' }}>Price: Low to High</option>
+        </select>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
         {filteredProperties.length === 0 ? (
-          <div className="glass" style={{ padding: '60px', textAlign: 'center', borderRadius: '30px' }}>
-            <Search size={48} color="var(--accent-gold)" style={{ opacity: 0.5, marginBottom: '20px' }} />
-            <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem' }}>
-              {language === 'en' ? 'No properties found matching your search.' : 'आपकी खोज से मेल खाने वाली कोई संपत्ति नहीं मिली।'}
+          <div className="glass" style={{ padding: '80px 20px', textAlign: 'center', borderRadius: '40px' }}>
+            <Search size={64} color="var(--accent-gold)" style={{ opacity: 0.3, marginBottom: '25px' }} />
+            <h3 style={{ fontSize: '1.8rem', marginBottom: '10px' }}>No matches found</h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>
+              {language === 'en' ? 'Try adjusting your filters or search query.' : 'कृपया अपने फ़िल्टर या खोज बदलें।'}
             </p>
           </div>
         ) : (
@@ -531,19 +579,24 @@ const BuyerView = ({
                 style={{
                   animationDelay: `${index * 0.1}s`,
                   cursor: 'pointer',
-                  borderRadius: '25px',
+                  borderRadius: '30px',
                   overflow: 'hidden',
                   display: 'flex',
-                  border: '1px solid rgba(255,255,255,0.05)',
-                  transition: 'transform 0.3s ease, border-color 0.3s ease',
+                  border: '1px solid var(--border-color)',
+                  transition: 'all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)',
+                  background: 'rgba(255,255,255,0.01)'
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = 'var(--accent-gold)';
-                  e.currentTarget.style.transform = 'translateY(-5px)';
+                  e.currentTarget.style.transform = 'translateY(-10px) scale(1.01)';
+                  e.currentTarget.style.background = 'rgba(212, 175, 55, 0.04)';
+                  e.currentTarget.style.boxShadow = '0 30px 60px rgba(0,0,0,0.8)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
-                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.borderColor = 'var(--border-color)';
+                  e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.01)';
+                  e.currentTarget.style.boxShadow = 'none';
                 }}
                 onClick={() => {
                   if (user) {
@@ -561,44 +614,45 @@ const BuyerView = ({
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                   <div style={{
-                    position: 'absolute', top: '15px', right: '15px',
+                    position: 'absolute', top: '20px', right: '20px',
                     background: 'var(--accent-gold)', color: '#000',
-                    padding: '5px 15px', borderRadius: '20px',
+                    padding: '6px 18px', borderRadius: '100px',
                     fontWeight: 'bold', fontSize: '0.8rem',
-                    boxShadow: '0 4px 10px rgba(0,0,0,0.3)'
+                    boxShadow: '0 4px 15px rgba(0,0,0,0.4)',
+                    zIndex: 1
                   }}>
                     {p.category}
                   </div>
                 </div>
 
-                <div style={{ padding: '30px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <div style={{ padding: '40px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
-                    <div style={{ color: 'var(--accent-gold)', fontWeight: 'bold', fontSize: '1.8rem' }}>
-                      ₹{p.price.toLocaleString('en-IN')}
+                    <div style={{ color: 'var(--accent-gold)', fontWeight: 'bold', fontSize: '2.2rem', fontFamily: 'var(--font-main)' }}>
+                      ₹{p.price >= 10000000 ? `${(p.price / 10000000).toFixed(2)} Cr` : p.price.toLocaleString('en-IN')}
                     </div>
                   </div>
 
-                  <h3 style={{ fontSize: '1.6rem', marginBottom: '12px', fontFamily: 'Playfair Display' }}>{p.title}</h3>
+                  <h3 style={{ fontSize: '1.8rem', marginBottom: '12px', fontFamily: 'Playfair Display', lineHeight: 1.2 }}>{p.title}</h3>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontSize: '1rem', marginBottom: '25px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontSize: '1.1rem', marginBottom: '30px' }}>
                     <MapPin size={18} color="var(--accent-gold)" /> {p.location}
                   </div>
 
                   <div style={{
-                    display: 'flex', gap: '25px', color: 'var(--text-secondary)',
-                    borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px',
+                    display: 'flex', gap: '30px', color: 'var(--text-secondary)',
+                    borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '25px',
                     marginTop: 'auto'
                   }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Bed size={20} color="var(--accent-gold)" />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <Bed size={22} color="var(--accent-gold)" />
                       <span>{p.beds} Beds</span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Bath size={20} color="var(--accent-gold)" />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <Bath size={22} color="var(--accent-gold)" />
                       <span>{p.baths} Baths</span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Maximize size={20} color="var(--accent-gold)" />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <Maximize size={22} color="var(--accent-gold)" />
                       <span>{p.sqft || p.area} sqft</span>
                     </div>
                   </div>
@@ -608,13 +662,13 @@ const BuyerView = ({
           ))
         )}
       </div>
-    </div >
+    </div>
   );
 };
 
 const PostPropertyView = ({ t, setView, user, handlePostProfessional }) => {
   const [sellerType, setSellerType] = useState('residential');
-  const [previewMedia, setPreviewMedia] = useState([]); // Array of { type, url }
+  const [previewMedia, setPreviewMedia] = useState([]); // Array of {type, url}
 
   const handleMediaChange = (e) => {
     const files = Array.from(e.target.files);
@@ -1777,20 +1831,20 @@ function App() {
 
     // Build WhatsApp Message
     const msg = `🏠 *THA EXCLUSIVE LISTING*
--------------------------------
-*User:* ${user.name}
-*Phone:* ${user.phone}
-*Role:* ${type === 'seller' ? 'Seller/Owner' : 'Builder/Investor'}
-${data.activePropertyType ? `*Type:* ${data.activePropertyType.toUpperCase()}` : ''}
-*Purpose:* ${data.purpose || data.requirement}
-*Category:* ${data.category || data.landType}
-*Area:* ${data.area} ${type === 'seller' ? (data.activePropertyType === 'agricultural' ? 'Acres' : 'sqft') : 'Gaj'}
-*Price/Budget:* ₹${data.price || data.budget}
-*Location:* ${data.location}
-${data.totalFloors ? `*Details:* ${data.totalFloors}` : ''}
-${data.description ? `*Note:* ${data.description}` : ''}
--------------------------------
-_Verified Professional Lead_ 🟢`;
+      -------------------------------
+      *User:* ${user.name}
+      *Phone:* ${user.phone}
+      *Role:* ${type === 'seller' ? 'Seller/Owner' : 'Builder/Investor'}
+      ${data.activePropertyType ? `*Type:* ${data.activePropertyType.toUpperCase()}` : ''}
+      *Purpose:* ${data.purpose || data.requirement}
+      *Category:* ${data.category || data.landType}
+      *Area:* ${data.area} ${type === 'seller' ? (data.activePropertyType === 'agricultural' ? 'Acres' : 'sqft') : 'Gaj'}
+      *Price/Budget:* ₹${data.price || data.budget}
+      *Location:* ${data.location}
+      ${data.totalFloors ? `*Details:* ${data.totalFloors}` : ''}
+      ${data.description ? `*Note:* ${data.description}` : ''}
+      -------------------------------
+      _Verified Professional Lead_ 🟢`;
 
     try {
       // WhatsApp summary removed as requested

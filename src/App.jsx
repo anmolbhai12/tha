@@ -361,7 +361,7 @@ const MobilePropertyCard = ({ p, onClick }) => (
     style={{
       display: 'flex',
       flexDirection: 'row',
-      height: '110px',
+      minHeight: '120px',
       marginBottom: '10px',
       borderRadius: '15px',
       overflow: 'hidden',
@@ -381,37 +381,49 @@ const MobilePropertyCard = ({ p, onClick }) => (
         position: 'absolute', top: '5px', left: '5px',
         background: 'var(--accent-gold)', color: '#000',
         padding: '2px 8px', borderRadius: '10px',
-        fontWeight: 'bold', fontSize: '0.6rem'
+        fontWeight: 'bold', fontSize: '0.6rem',
+        zIndex: 1
       }}>
         {p.category}
       </div>
     </div>
 
     {/* Content Side - 65% */}
-    <div style={{ flex: 1, padding: '10px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+    <div style={{ flex: 1, padding: '12px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '4px' }}>
       <h3 style={{
-        fontSize: '0.95rem',
-        marginBottom: '4px',
+        fontSize: '0.9rem',
         fontFamily: 'Playfair Display',
+        margin: 0,
+        display: '-webkit-box',
+        WebkitLineClamp: 2,
+        WebkitBoxOrient: 'vertical',
         overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap'
+        lineHeight: '1.2'
       }}>
         {p.title}
       </h3>
 
-      <div style={{ color: 'var(--accent-gold)', fontWeight: 'bold', fontSize: '1rem', marginBottom: '4px' }}>
+      <div style={{ color: 'var(--accent-gold)', fontWeight: 'bold', fontSize: '1rem' }}>
         ₹{p.price >= 10000000 ? `${(p.price / 10000000).toFixed(2)} Cr` : p.price.toLocaleString('en-IN')}
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--text-secondary)', fontSize: '0.75rem' }}>
         <MapPin size={12} color="var(--accent-gold)" />
-        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.location}</span>
+        <span style={{
+          display: '-webkit-box',
+          WebkitLineClamp: 1,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden'
+        }}>{p.location}</span>
       </div>
 
-      <div style={{ display: 'flex', gap: '10px', marginTop: '6px', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-        <span>{p.beds} Beds</span>
-        <span>{p.sqft || p.area} sqft</span>
+      <div style={{ display: 'flex', gap: '10px', marginTop: '2px', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+          <Bed size={10} /> {p.beds} Beds
+        </span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+          <Maximize size={10} /> {p.sqft || p.area} sqft
+        </span>
       </div>
     </div>
   </div>
@@ -740,7 +752,7 @@ const PostPropertyView = ({ t, setView, user, handlePostProfessional }) => {
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '15px' }}>
               <div className="input-group">
                 <label>{t.seller.purpose}</label>
                 <select name="purpose" className="glass">
@@ -759,7 +771,7 @@ const PostPropertyView = ({ t, setView, user, handlePostProfessional }) => {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '15px' }}>
               <div className="input-group">
                 <label>{t.seller.location}</label>
                 <input name="location" placeholder="e.g. DLF Phase 5" required />
@@ -775,7 +787,7 @@ const PostPropertyView = ({ t, setView, user, handlePostProfessional }) => {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '15px' }}>
               <div className="input-group"><label>{t.seller.price}</label><input name="price" type="number" placeholder="50,00,000" required /></div>
               <div className="input-group"><label>{t.seller.areaSqft}</label><input name="area" type="text" placeholder="1200" required /></div>
             </div>
@@ -786,7 +798,7 @@ const PostPropertyView = ({ t, setView, user, handlePostProfessional }) => {
             </div>
 
             {sellerType === 'residential' && (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '15px' }}>
                 <div className="input-group"><label>{t.seller.beds}</label><input name="beds" type="number" placeholder="3" /></div>
                 <div className="input-group"><label>{t.seller.baths}</label><input name="baths" type="number" placeholder="2" /></div>
               </div>
